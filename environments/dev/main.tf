@@ -34,6 +34,7 @@ resource "aws_s3_bucket" "test" {
   bucket = "${var.project_name}-${var.environment}-test"
 }
 
+# Compute module
 module "compute" {
   source = "../../modules/compute"
   
@@ -43,4 +44,15 @@ module "compute" {
   private_subnet_ids  = module.networking.private_subnet_ids
   public_subnet_ids   = module.networking.public_subnet_ids
   instance_type       = "t3.micro"
+}
+
+module "database" {
+  source = "../../modules/database"
+  
+  project_name           = var.project_name
+  environment            = var.environment
+  vpc_id                 = module.networking.vpc_id
+  private_subnet_ids     = module.networking.private_subnet_ids
+  app_security_group_id  = module.compute.app_security_group_id
+  db_password            = "MySecurePassword123!"
 }
