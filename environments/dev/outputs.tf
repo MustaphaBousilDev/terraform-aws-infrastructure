@@ -46,4 +46,20 @@ output "database_port" {
   value       = module.database.db_instance_port
 }
 
+# Storage outputs
+output "app_storage_bucket" {
+  description = "Application storage bucket name"
+  value       = module.storage.app_storage_bucket_name
+}
+
+output "static_assets_bucket" {
+  description = "Static assets bucket name"
+  value       = module.storage.static_assets_bucket_name
+}
+
+output "logs_bucket" {
+  description = "Logs bucket name"
+  value       = module.storage.logs_bucket_name
+}
+
 
