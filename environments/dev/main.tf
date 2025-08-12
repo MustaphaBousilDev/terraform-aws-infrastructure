@@ -30,9 +30,9 @@ module "networking" {
 }
 
 # Test S3 bucket
-resource "aws_s3_bucket" "test" {
+/*resource "aws_s3_bucket" "test" {
   bucket = "${var.project_name}-${var.environment}-test"
-}
+}*/
 
 # Compute module
 module "compute" {
@@ -46,6 +46,8 @@ module "compute" {
   instance_type       = "t3.micro"
 }
 
+
+# Database module
 module "database" {
   source = "../../modules/database"
   
@@ -55,4 +57,14 @@ module "database" {
   private_subnet_ids     = module.networking.private_subnet_ids
   app_security_group_id  = module.compute.app_security_group_id
   db_password            = "MySecurePassword123!"
+}
+
+# Storage module
+module "storage" {
+  source = "../../modules/storage"
+  
+  project_name      = var.project_name
+  environment       = var.environment
+  enable_versioning = true
+  enable_public_read = false
 }
