@@ -24,7 +24,7 @@ output "public_subnet_ids" {
   value       = module.networking.public_subnet_ids
 }
 
-
+# Compute outputs
 output "load_balancer_dns" {
   description = "Load balancer DNS name"
   value       = module.compute.alb_dns_name
@@ -34,4 +34,16 @@ output "load_balancer_url" {
   description = "Load balancer URL"
   value       = "http://${module.compute.alb_dns_name}"
 }
+
+# Database outputs
+output "database_endpoint" {
+  description = "Database endpoint"
+  value       = module.database.db_instance_endpoint
+}
+
+output "database_port" {
+  description = "Database port"
+  value       = module.database.db_instance_port
+}
+
 
