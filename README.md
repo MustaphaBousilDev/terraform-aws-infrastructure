@@ -28,13 +28,13 @@ This project creates a complete, secure, and scalable AWS infrastructure using T
 └─────────────────────────┬───────────────────────────────────────┘
                           │
 ┌─────────────────────────▼───────────────────────────────────────┐
-│                 Application Load Balancer                      │
-│                    (Public Subnets)                            │
+│                 Application Load Balancer                       │
+│                    (Public Subnets)                             │
 └─────────────────────────┬───────────────────────────────────────┘
                           │
 ┌─────────────────────────▼───────────────────────────────────────┐
-│               Auto Scaling Group (EC2)                         │
-│                  (Private Subnets)                             │
+│               Auto Scaling Group (EC2)                          │
+│                  (Private Subnets)                              │
 └─────────────────────────┬───────────────────────────────────────┘
                           │
     ┌─────────────────────┼─────────────────────┐
@@ -81,7 +81,7 @@ aws sts get-caller-identity  # Verify AWS access
 
 ### **1. Clone Repository**
 ```bash
-git clone https://github.com/yourusername/terraform-aws-infrastructure.git
+git clone https://github.com/MustaphaBousilDev/terraform-aws-infrastructure.git
 cd terraform-aws-infrastructure
 ```
 
