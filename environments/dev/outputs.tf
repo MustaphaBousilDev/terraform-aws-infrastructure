@@ -59,4 +59,20 @@ output "logs_bucket" {
   value       = module.storage.logs_bucket_name
 }
 
+# Security outputs
+output "kms_key_id" {
+  description = "KMS encryption key ID"
+  value       = module.security.kms_key_id
+}
+
+output "db_secret_name" {
+  description = "Database secret name in Secrets Manager"
+  value       = module.security.db_secret_name
+}
+
+output "ec2_instance_profile" {
+  description = "EC2 instance profile name"
+  value       = module.security.ec2_instance_profile_name
+}
+
 
