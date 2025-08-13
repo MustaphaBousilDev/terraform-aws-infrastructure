@@ -68,3 +68,14 @@ module "storage" {
   enable_versioning = true
   enable_public_read = false
 }
+
+# Security module
+module "security" {
+  source = "../../modules/security"
+  
+  project_name           = var.project_name
+  environment            = var.environment
+  db_password            = "MySecurePassword123!"
+  create_ssl_certificate = false
+  domain_name            = ""
+}
