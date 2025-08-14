@@ -34,7 +34,6 @@ resource "aws_cloudwatch_log_group" "web_server" {
   }
 }
 
-
 # System Logs (OS level logs, security, etc.)
 resource "aws_cloudwatch_log_group" "system" {
   count = var.enable_log_groups ? 1 : 0
@@ -50,7 +49,6 @@ resource "aws_cloudwatch_log_group" "system" {
     Purpose     = "Operating system and security logs"
   }
 }
-
 
 # Application Error Logs (Critical errors, exceptions)
 resource "aws_cloudwatch_log_group" "application_errors" {
@@ -116,7 +114,6 @@ resource "aws_cloudwatch_log_group" "load_balancer" {
   }
 }
 
-
 # Security Logs (Authentication, authorization, suspicious activities)
 resource "aws_cloudwatch_log_group" "security" {
   count = var.enable_log_groups ? 1 : 0
@@ -132,7 +129,6 @@ resource "aws_cloudwatch_log_group" "security" {
     Purpose     = "Security events, authentication, and access logs"
   }
 }
-
 
 # Performance Monitoring Logs (Custom metrics, performance data)
 resource "aws_cloudwatch_log_group" "performance" {
@@ -204,7 +200,6 @@ resource "aws_cloudwatch_log_stream" "critical_errors" {
   log_group_name = aws_cloudwatch_log_group.application_errors[0].name
 }
 
-
 # =============================================================================
 # OUTPUT LOG GROUP INFORMATION
 # =============================================================================
@@ -225,9 +220,3 @@ locals {
     lambda_functions   = aws_cloudwatch_log_group.lambda_functions[0].name
   } : {}
 }
-
-
-
-
-
-
