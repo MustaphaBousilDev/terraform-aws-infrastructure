@@ -79,3 +79,108 @@ module "security" {
   create_ssl_certificate = false
   domain_name            = ""
 }
+
+
+# =============================================================================
+# MONITORING MODULE - ADD THIS ENTIRE SECTION
+# =============================================================================
+
+module "monitoring" {
+  source = "../../modules/monitoring"
+  
+  # Basic Configuration
+  project_name = var.project_name
+  environment  = var.environment
+  
+  # Infrastructure Resource IDs (from other modules)
+  vpc_id                     = module.networking.vpc_id
+  load_balancer_arn         = module.compute.load_balancer_arn
+  target_group_arn          = module.compute.target_group_arn
+  auto_scaling_group_name   = module.compute.auto_scaling_group_name
+  db_instance_identifier    = module.database.db_instance_identifier
+  
+  # =============================================================================
+  # NOTIFICATION CONFIGURATION - CUSTOMIZE THESE SETTINGS
+  # =============================================================================
+  
+  # Primary notification email (REQUIRED - replace with your email)
+  notification_email = "admin@yourcompany.com"  # ← CHANGE THIS TO YOUR EMAIL
+  
+  # Optional: SMS notifications
+  notification_phone = "+1234567890"  # ← ADD YOUR PHONE NUMBER (optional)
+  
+  # Enhanced team-based notifications (OPTIONAL - configure as needed)
+  notification_emails = {
+    devops_team = [
+      "devops@yourcompany.com",    # ← ADD YOUR DEVOPS TEAM EMAILS
+      "admin@yourcompany.com"
+    ]
+    development_team = [
+      "developers@yourcompany.com"  # ← ADD YOUR DEVELOPMENT TEAM EMAILS
+    ]
+    management_team = [
+      # "manager@yourcompany.com"   # ← ADD MANAGEMENT EMAILS (optional)
+    ]
+    on_call_engineer = "oncall@yourcompany.com"  # ← ADD ON-CALL EMAIL
+  }
+  
+  # Slack integration (OPTIONAL - add your Slack webhook URL)
+  slack_webhook_url = ""  # ← ADD YOUR SLACK WEBHOOK URL HERE
+  # Example: "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
+  
+  # Custom webhook endpoints (OPTIONAL - for PagerDuty, JIRA, etc.)
+  webhook_endpoints = []
+  # Example:
+  # webhook_endpoints = [
+  #   {
+  #     name        = "PagerDuty"
+  #     url         = "https://events.pagerduty.com/v2/enqueue"
+  #     auth_header = "Authorization: Token token=YOUR_PAGERDUTY_TOKEN"
+  #   }
+  # ]
+  
+  # Phone call notifications for critical alerts (OPTIONAL)
+  enable_phone_calls    = false  # Set to true if you want phone call alerts
+  phone_number_critical = ""     # Add phone number for critical alerts
+  
+  # =============================================================================
+  # ALARM THRESHOLDS - CUSTOMIZE BASED ON YOUR NEEDS
+  # =============================================================================
+  
+  # EC2 Instance Monitoring Thresholds
+  ec2_cpu_threshold    = 80  # Trigger alert when CPU > 80%
+  ec2_memory_threshold = 85  # Trigger alert when memory > 85%
+  
+  # RDS Database Monitoring Thresholds
+  rds_cpu_threshold        = 75   # Database CPU threshold
+  rds_connection_threshold = 50   # Maximum database connections
+  rds_free_space_threshold = 2147483648  # 2GB free space minimum
+  
+  # Application Load Balancer Thresholds
+  alb_response_time_threshold = 1.0  # Response time > 1 second
+  alb_error_rate_threshold    = 5    # Error rate > 5%
+  
+  # =============================================================================
+  # MONITORING FEATURE TOGGLES
+  # =============================================================================
+  
+  # Enable/disable monitoring components
+  enable_sns_notifications   = true   # Email/SMS notifications
+  enable_dashboard           = true   # CloudWatch dashboard
+  enable_log_groups          = true   # Application log groups
+  enable_ec2_monitoring      = true   # EC2 instance monitoring
+  enable_rds_monitoring      = true   # Database monitoring
+  enable_alb_monitoring      = true   # Load balancer monitoring
+  enable_detailed_monitoring = false  # 1-minute intervals (costs more, set to true for production)
+  
+  # =============================================================================
+  # MONITORING CONFIGURATION
+  # =============================================================================
+  
+  # Alarm evaluation settings
+  evaluation_periods = 2    # Number of consecutive periods before triggering alarm
+  alarm_period      = 300  # Period length in seconds (300 = 5 minutes)
+  
+  # Log retention
+  log_retention_days = 30   # Keep logs for 30 days (increase for production)
+}
