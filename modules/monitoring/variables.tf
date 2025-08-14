@@ -68,9 +68,70 @@ variable "notification_email" {
 }
 
 variable "notification_phone" {
-  description = "Phone number for SMS alerts (optional)"
+  description = "Phone number for SMS alerts (optional, format: +1234567890)"
   type        = string
   default     = ""
+  validation {
+    condition     = var.notification_phone == "" || can(regex("^\\+[1-9]\\d{1,14}$", var.notification_phone))
+    error_message = "Phone number must be in international format (e.g., +1234567890)."
+  }
+}
+
+# Slack Integration
+variable "slack_webhook_url" {
+  description = "Slack incoming webhook URL for standard alerts"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "slack_critical_webhook_url" {
+  description = "Slack incoming webhook URL for critical alerts (can be same as standard or different channel)"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+# Microsoft Teams Integration
+variable "teams_webhook_url" {
+  description = "Microsoft Teams incoming webhook URL for alerts"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+# Custom Webhook Integration (PagerDuty, OpsGenie, etc.)
+variable "custom_webhook_url" {
+  description = "Custom webhook URL for third-party integrations"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "custom_webhook_headers" {
+  description = "Custom headers for webhook authentication (JSON format)"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+# Notification Preferences
+variable "enable_info_notifications" {
+  description = "Enable email notifications for info-level alerts (can be noisy)"
+  type        = bool
+  default     = false
+}
+
+variable "enable_message_formatting" {
+  description = "Enable Lambda-based message formatting for enhanced notifications"
+  type        = bool
+  default     = true
+}
+
+variable "cross_account_role_arns" {
+  description = "List of cross-account role ARNs allowed to access SNS topics"
+  type        = list(string)
+  default     = []
 }
 
 # =============================================================================
