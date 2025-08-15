@@ -1,0 +1,63 @@
+name: 🚀 Terraform Infrastructure Deployment
+on:
+    push:
+        branches: [ main, develop ]
+        paths:
+            - 'environments/dev/**'
+            - 'modules/**'
+    pull_request:
+        branches: [ main ]
+        paths:
+            - 'environments/dev/**'
+            - 'modules/**'
+    workflow_dispatch:  # Manual trigger
+env:
+  TF_VERSION: "1.5.0"
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  WORKING_DIR: "environments/dev"
+
+jobs:
+    # Job 1: Validation and Planning
+    validate-and-plan:
+        name: 🔍 Validate & Plan
+        runs-on: ubuntu-latest
+        environment: dev
+
+        steps:
+            - name: 📥 Checkout Code
+              uses: actions/checkout@v4
+            
+            - name: 🔧 Setup Terraform
+              uses: hashicorp/setup-terraform@v3
+              with:
+                terraform_version: ${{ env.TF_VERSION }}
+
+            - name: 🔐 Configure AWS Credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+               aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+               aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+               aws-region: ${{ secrets.AWS_REGION }}
+
+            - name: 🎨 Terraform Format Check
+              working-directory: ${{ env.WORKING_DIR }}
+              run: terraform fmt -check -recursive
+            
+            - name: ✅ Terraform Init
+              working-directory: ${{ env.WORKING_DIR }}
+              run: terraform init
+
+            - name: 🔍 Terraform Validate
+              working-directory: ${{ env.WORKING_DIR }}
+              run: terraform validate
+
+            - name: 📋 Terraform Plan
+              working-directory: ${{ env.WORKING_DIR }}
+              run: terraform plan -out=tfplan
+
+            - name: 💾 Save Plan Artifact
+              
+              uses: actions/upload-artifact@v4
+              with:
+                name: terraform-plan
+                path: ${{ env.WORKING_DIR }}/tfplan
