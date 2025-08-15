@@ -76,3 +76,60 @@ output "ec2_instance_profile" {
 }
 
 
+# =============================================================================
+# MONITORING MODULE OUTPUTS
+# =============================================================================
+# SNS Topics
+output "sns_alerts_topic" {
+  description = "SNS topic ARN for standard alerts"
+  value       = module.monitoring.sns_topic_alerts_arn
+}
+
+output "sns_critical_alerts_topic" {
+  description = "SNS topic ARN for critical alerts"
+  value       = module.monitoring.sns_topic_critical_alerts_arn
+}
+output "sns_info_alerts_topic" {
+  description = "SNS topic ARN for info alerts"
+  value       = module.monitoring.sns_topic_info_alerts_arn
+}
+
+# CloudWatch Log Groups
+output "log_groups" {
+  description = "CloudWatch log groups for application logging"
+  value       = module.monitoring.log_groups
+}
+
+# CloudWatch Alarms
+output "ec2_alarm_names" {
+  description = "List of EC2 CloudWatch alarm names"
+  value       = module.monitoring.ec2_alarm_names
+}
+
+output "rds_alarm_names" {
+  description = "List of RDS CloudWatch alarm names"
+  value       = module.monitoring.rds_alarm_names
+}
+output "alb_alarm_names" {
+  description = "List of ALB CloudWatch alarm names"
+  value       = module.monitoring.alb_alarm_names
+}
+
+# Monitoring Summary
+output "monitoring_summary" {
+  description = "Summary of monitoring resources created"
+  value       = module.monitoring.monitoring_summary
+}
+
+# Notification Configuration
+output "notification_endpoints" {
+  description = "Summary of configured notification endpoints"
+  value       = module.monitoring.notification_endpoints
+  sensitive   = true
+}
+
+# Lambda Functions (if using enhanced notifications)
+output "lambda_functions" {
+  description = "Lambda functions created for enhanced notifications"
+  value       = module.monitoring.lambda_functions
+}
