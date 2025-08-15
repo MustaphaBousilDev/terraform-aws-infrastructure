@@ -105,7 +105,7 @@ resource "aws_sns_topic_policy" "alerts_policy" {
           Service = "cloudwatch.amazonaws.com"
         }
         Action = [
-          "SNS:Publish"
+          "sns:Publish"
         ]
         Resource = aws_sns_topic.alerts[0].arn
         Condition = {
@@ -121,11 +121,11 @@ resource "aws_sns_topic_policy" "alerts_policy" {
           AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
         }
         Action = [
-          "SNS:Subscribe",
-          "SNS:Unsubscribe",
-          "SNS:ListSubscriptionsByTopic",
-          "SNS:GetTopicAttributes",
-          "SNS:SetTopicAttributes"
+          "sns:Subscribe",                   
+          "sns:Unsubscribe",                
+          "sns:ListSubscriptionsByTopic",   
+          "sns:GetTopicAttributes",         
+          "sns:SetTopicAttributes"           
         ]
         Resource = aws_sns_topic.alerts[0].arn
       }

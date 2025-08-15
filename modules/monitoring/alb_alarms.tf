@@ -166,9 +166,9 @@ resource "aws_cloudwatch_metric_alarm" "alb_target_4xx_errors" {
     Name        = "${var.project_name}-${var.environment}-alb-target-4xx-alarm"
     Environment = var.environment
     Project     = var.project_name
-    AlarmType   = "application-errors"
+    AlarmType   = "application errors"
     Severity    = "medium"
-    Purpose     = "Monitor application-level 4xx errors from backend servers"
+    Purpose     = "Monitor application level 4xx errors from backend servers"
   }
 }
 

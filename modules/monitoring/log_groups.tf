@@ -126,7 +126,7 @@ resource "aws_cloudwatch_log_group" "security" {
     Environment = var.environment
     Project     = var.project_name
     LogType     = "security"
-    Purpose     = "Security events, authentication, and access logs"
+    Purpose     = "Security and access logs"
   }
 }
 
