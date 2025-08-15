@@ -105,9 +105,10 @@ resource "aws_cloudwatch_metric_alarm" "alb_high_4xx_errors" {
     Name        = "${var.project_name}-${var.environment}-alb-4xx-errors-alarm"
     Environment = var.environment
     Project     = var.project_name
-    AlarmType   = "load-balancer-errors"
+    AlarmType   = "load balancer errors"
     Severity    = "medium"
-    Purpose     = "Monitor client-side errors (4xx) for potential issues"
+    ManagedBy   = "terraform"
+    Purpose     = "Monitor client side errors 4xx for potential issues"
   }
 }
 
@@ -136,9 +137,9 @@ resource "aws_cloudwatch_metric_alarm" "alb_high_5xx_errors" {
     Name        = "${var.project_name}-${var.environment}-alb-5xx-errors-alarm"
     Environment = var.environment
     Project     = var.project_name
-    AlarmType   = "load-balancer-errors"
+    AlarmType   = "load balancer errors"
     Severity    = "critical"
-    Purpose     = "Monitor server-side errors (5xx) indicating backend issues"
+    Purpose     = "Monitor server-side errors 5xx indicating backend issues"
   }
 }
 

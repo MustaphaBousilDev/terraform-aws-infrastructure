@@ -121,11 +121,9 @@ resource "aws_sns_topic_policy" "alerts_policy" {
           AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
         }
         Action = [
-          "sns:Subscribe",                   
-          "sns:Unsubscribe",                
-          "sns:ListSubscriptionsByTopic",   
-          "sns:GetTopicAttributes",         
-          "sns:SetTopicAttributes"           
+          "sns:GetTopicAttributes",
+          "sns:AddPermission",
+          "sns:RemovePermission"
         ]
         Resource = aws_sns_topic.alerts[0].arn
       }
