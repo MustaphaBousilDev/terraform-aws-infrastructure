@@ -82,6 +82,10 @@ resource "aws_s3_bucket_lifecycle_configuration" "logs" {
     id     = "log_retention"
     status = "Enabled"
 
+    filter {
+      prefix = ""  # Apply to all objects
+    }
+
     expiration {
       days = 90  # Delete logs older than 90 days
     }

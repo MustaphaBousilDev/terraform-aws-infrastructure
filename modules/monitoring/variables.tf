@@ -79,7 +79,7 @@ variable "notification_phone" {
 
 # Slack Integration
 variable "slack_webhook_url" {
-  description = "Slack incoming webhook URL for standard alerts"
+  description = "Slack webhook URL for notifications (optional)"
   type        = string
   default     = ""
   sensitive   = true

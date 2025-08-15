@@ -24,16 +24,6 @@ output "sns_topic_info_alerts_arn" {
   value       = var.enable_sns_notifications ? aws_sns_topic.info_alerts[0].arn : null
 }
 
-output "sns_topic_security_alerts_arn" {
-  description = "ARN of the security alerts SNS topic"
-  value       = var.enable_sns_notifications ? aws_sns_topic.security_alerts[0].arn : null
-}
-
-# Message Formatting
-output "message_formatter_function_name" {
-  description = "Name of the Lambda function used for message formatting"
-  value       = var.enable_sns_notifications && var.enable_message_formatting ? aws_lambda_function.message_formatter[0].function_name : null
-}
 
 output "notification_dlq_url" {
   description = "URL of the SQS dead letter queue for failed notifications"

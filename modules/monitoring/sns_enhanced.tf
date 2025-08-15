@@ -19,12 +19,7 @@ variable "notification_emails" {
   }
 }
 
-variable "slack_webhook_url" {
-  description = "Slack webhook URL for notifications (optional)"
-  type        = string
-  default     = ""
-  sensitive   = true
-}
+
 
 variable "webhook_endpoints" {
   description = "List of webhook endpoints for custom integrations"
@@ -52,6 +47,47 @@ variable "enable_phone_calls" {
 # =============================================================================
 # ENHANCED SNS TOPIC POLICIES FOR SECURITY
 # =============================================================================
+# Main Alerts Topic (Medium severity alerts)
+resource "aws_sns_topic" "alerts" {
+  count = var.enable_sns_notifications ? 1 : 0
+  
+  name = "${var.project_name}-${var.environment}-alerts"
+  
+  tags = {
+    Name        = "${var.project_name}-${var.environment}-alerts-topic"
+    Environment = var.environment
+    Project     = var.project_name
+    Purpose     = "Standard severity alerts and notifications"
+  }
+}
+
+# Critical Alerts Topic (High severity alerts)
+resource "aws_sns_topic" "critical_alerts" {
+  count = var.enable_sns_notifications ? 1 : 0
+  
+  name = "${var.project_name}-${var.environment}-critical-alerts"
+  
+  tags = {
+    Name        = "${var.project_name}-${var.environment}-critical-alerts-topic"
+    Environment = var.environment
+    Project     = var.project_name
+    Purpose     = "Critical severity alerts requiring immediate attention"
+  }
+}
+# Info Alerts Topic (Low severity, informational)
+resource "aws_sns_topic" "info_alerts" {
+  count = var.enable_sns_notifications ? 1 : 0
+  
+  name = "${var.project_name}-${var.environment}-info-alerts"
+  
+  tags = {
+    Name        = "${var.project_name}-${var.environment}-info-alerts-topic"
+    Environment = var.environment
+    Project     = var.project_name
+    Purpose     = "Informational alerts and cost optimization notifications"
+  }
+}
+
 
 # Policy for alerts topic
 resource "aws_sns_topic_policy" "alerts_policy" {

@@ -94,10 +94,10 @@ module "monitoring" {
   
   # Infrastructure Resource IDs (from other modules)
   vpc_id                     = module.networking.vpc_id
-  load_balancer_arn         = module.compute.load_balancer_arn
+  load_balancer_arn         = module.compute.alb_arn
   target_group_arn          = module.compute.target_group_arn
-  auto_scaling_group_name   = module.compute.auto_scaling_group_name
-  db_instance_identifier    = module.database.db_instance_identifier
+  auto_scaling_group_name   = module.compute.autoscaling_group_name
+  db_instance_identifier    = module.database.db_instance_id
   
   # =============================================================================
   # NOTIFICATION CONFIGURATION - CUSTOMIZE THESE SETTINGS
