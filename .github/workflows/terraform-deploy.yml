@@ -173,4 +173,4 @@ jobs:
             - name: 🗑️ Destroy Infrastructure (Dev & Staging Only)
               if: needs.setup.outputs.environment == 'dev' || needs.setup.outputs.environment == 'staging'
               working-directory: ${{ needs.setup.outputs.working_dir }}
-              run: terraform destroy -auto-approve
+              run: terraform destroy -auto-approve 
