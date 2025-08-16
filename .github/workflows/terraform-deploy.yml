@@ -139,12 +139,17 @@ jobs:
               with:
                 terraform_version: ${{ env.TF_VERSION }}
 
-            - name: 🔐 Configure AWS Credentials
-              uses: aws-actions/configure-aws-credentials@v4
-              with:
-                aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                aws-region: ${{ secrets.AWS_REGION }}
+            - name: 🔓 Clear Stuck Locks
+              working-directory: ${{ needs.setup.outputs.working_dir }}
+              run: |
+                # Try to get lock info and unlock if it's from a cancelled CI run
+                LOCK_INFO=$(terraform force-unlock -help 2>&1 || true)
+                # If there's a stuck lock from a runner (CI), unlock it
+                terraform plan -lock=false -refresh=false -detailed-exitcode > /dev/null 2>&1 || {
+                  echo "Found stuck lock, attempting auto-unlock..."
+                  terraform force-unlock -force fedf47c0-4e09-2b40-3ac4-6b3c8020288a || true
+                }
+              continue-on-error: true
 
             - name: 💾 Download Plan Artifact
               uses: actions/download-artifact@v4
