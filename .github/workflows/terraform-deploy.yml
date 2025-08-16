@@ -70,3 +70,54 @@ jobs:
               run: |
                 echo "Infrastructure plan is ready for deployment"
                 echo "Review the plan in the previous job before approving"
+    deploy:
+        name: 🚀 Deploy Infrastructure
+        runs-on: ubuntu-latest
+        needs: [validate-and-plan, approval]
+        if: github.ref == 'refs/heads/main'
+        environment: dev
+
+        steps:
+            - name: 📥 Checkout Code
+              uses: actions/checkout@v4
+
+            - name: 🔧 Setup Terraform
+              uses: hashicorp/setup-terraform@v3
+              with:
+                terraform_version: ${{ env.TF_VERSION }}
+
+            - name: 🔐 Configure AWS Credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                aws-region: ${{ secrets.AWS_REGION }}
+
+            - name: 💾 Download Plan Artifact
+              uses: actions/download-artifact@v4
+              with:
+                name: terraform-plan
+                path: ${{ env.WORKING_DIR }}
+
+            - name: ✅ Terraform Init
+              working-directory: ${{ env.WORKING_DIR }}
+              run: terraform init
+
+            - name: 🚀 Apply Infrastructure
+              working-directory: ${{ env.WORKING_DIR }}
+              run: terraform apply tfplan
+
+            - name: ⏳ Wait Before Destroy
+              run: sleep 30  # Give resources time to fully initialize
+
+            - name: 🧪 Test Infrastructure (Optional)
+              working-directory: ${{ env.WORKING_DIR }}
+              run: |
+                echo "Infrastructure deployed successfully!"
+                echo "Add any basic tests here..."
+                # terraform output
+            
+            - name: 🗑️ Destroy Infrastructure
+              working-directory: ${{ env.WORKING_DIR }}
+              run: terraform destroy -auto-approve
+              if: always()  # Run even if previous steps failed
