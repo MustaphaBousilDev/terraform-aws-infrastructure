@@ -33,7 +33,7 @@ output "load_balancer_dns" {
 
 output "load_balancer_url" {
   description = "Production application URL"
-  value       = "https://${module.compute.alb_dns_name}"  # Use HTTPS for prod
+  value       = "https://${module.compute.alb_dns_name}" # Use HTTPS for prod
 }
 
 output "autoscaling_group_name" {
@@ -45,7 +45,7 @@ output "autoscaling_group_name" {
 output "database_endpoint" {
   description = "Production database endpoint"
   value       = module.database.db_instance_endpoint
-  sensitive   = true  # Hide from logs for security
+  sensitive   = true # Hide from logs for security
 }
 
 output "database_port" {
@@ -108,13 +108,13 @@ output "sns_critical_alerts_topic" {
 output "production_deployment_summary" {
   description = "Production deployment summary"
   value = {
-    environment     = var.environment
-    instance_type   = var.instance_type
-    vpc_cidr       = "10.2.0.0/16"
-    multi_az       = "3 Availability Zones"
+    environment      = var.environment
+    instance_type    = var.instance_type
+    vpc_cidr         = "10.2.0.0/16"
+    multi_az         = "3 Availability Zones"
     backup_retention = "${var.log_retention_days} days"
-    monitoring     = "Enhanced monitoring enabled"
-    security_level = "Production grade"
+    monitoring       = "Enhanced monitoring enabled"
+    security_level   = "Production grade"
   }
 }
 
@@ -123,8 +123,8 @@ output "health_check_endpoints" {
   description = "Production health check endpoints"
   value = {
     load_balancer = "https://${module.compute.alb_dns_name}/health"
-    database     = module.database.db_instance_endpoint
-    monitoring   = "https://console.aws.amazon.com/cloudwatch/home?region=${var.aws_region}"
+    database      = module.database.db_instance_endpoint
+    monitoring    = "https://console.aws.amazon.com/cloudwatch/home?region=${var.aws_region}"
   }
   sensitive = true
 }
