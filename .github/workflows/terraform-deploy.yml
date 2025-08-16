@@ -1,13 +1,13 @@
 name: 🚀 Multi-Environment Terraform Deployment
 on:
     push:
-        branches: [ main, develop ]
+        branches: [ main, develop, prod ]
         paths:
         - 'environments/**'
         - 'modules/**'
       
     pull_request:
-        branches: [ main ]
+        branches: [ main, prod ]
         paths:
         - 'environments/**'
         - 'modules/**'
@@ -45,6 +45,8 @@ jobs:
                     ENV="dev"
                 elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
                     ENV="staging"
+                elif [ "${{ github.ref }}" = "refs/heads/prod" ]; then
+                    ENV="prod"
                 else
                     ENV="dev"
                 fi
