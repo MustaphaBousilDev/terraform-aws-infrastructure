@@ -100,7 +100,7 @@ output "sns_info_alerts_topic" {
 output "monitoring_summary" {
   description = "Summary of monitoring resources created"
   value       = module.monitoring.monitoring_summary
-  sensitive   = true 
+  sensitive   = true
 }
 
 # Notification Configuration
