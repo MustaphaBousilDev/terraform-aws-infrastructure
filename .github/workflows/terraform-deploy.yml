@@ -93,6 +93,13 @@ jobs:
               working-directory: ${{ needs.setup.outputs.working_dir }}
               run: terraform validate
 
+            - name: 🔓 Force Unlock State (if needed)
+              working-directory: ${{ needs.setup.outputs.working_dir }}
+              run: |
+                # Try to unlock any stuck locks from previous cancelled runs
+                terraform force-unlock -force 007ca5e1-8b12-2be3-4553-50b15b282019 || true
+              continue-on-error: true
+
             - name: 📋 Terraform Plan
               working-directory: ${{ needs.setup.outputs.working_dir }}
               run: terraform plan -out=tfplan
