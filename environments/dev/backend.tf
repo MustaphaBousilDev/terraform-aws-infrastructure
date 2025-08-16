@@ -6,5 +6,5 @@ terraform {
     dynamodb_table = "terraformawsinfrastructure-terraform-locks"
     encrypt        = true
   }
-}  
+}    
 
