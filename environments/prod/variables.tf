@@ -8,7 +8,7 @@ variable "aws_region" {
 variable "project_name" {
   description = "Name of the project"
   type        = string
-  default     = "terraformawsinfrastructure"
+  default     = "terraform-infra"
 }
 
 variable "environment" {
@@ -65,7 +65,7 @@ variable "detailed_monitoring" {
 variable "log_retention_days" {
   description = "CloudWatch log retention in days"
   type        = number
-  default     = 90
+  default     = 60
 }
 
 # Security Configuration
