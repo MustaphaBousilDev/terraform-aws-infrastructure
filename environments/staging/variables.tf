@@ -4,10 +4,6 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "instance_type" {
-  description = "AWS Instance Type"
-  type        = string
-}
 
 variable "project_name" {
   description = "Name of the project"
