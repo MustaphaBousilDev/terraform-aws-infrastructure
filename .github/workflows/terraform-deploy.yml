@@ -139,6 +139,13 @@ jobs:
               with:
                 terraform_version: ${{ env.TF_VERSION }}
 
+            - name: 🔐 Configure AWS Credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                    aws-region: ${{ secrets.AWS_REGION }}
+
             - name: 🔓 Clear Stuck Locks
               working-directory: ${{ needs.setup.outputs.working_dir }}
               run: |
