@@ -164,3 +164,13 @@ resource "aws_autoscaling_group" "app" {
   }
 }
 
+
+# Autu Scaling Policy - Scale up (add more instances)
+resource "aws_autoscaling_policy" "scale_up" {
+  name = "${var.project_name}-${var.environment}-scale-up"
+  scaling_adjustment = 1 # Add 1 instance
+  adjustment_type = "ChangeInCapacity" # Change by exact number
+  cooldown = 300 # Wait 5 minutes before next scaling
+  autoscaling_group_name = aws_autoscaling_group.app.name
+  
+}
