@@ -188,10 +188,11 @@ resource "aws_autoscaling_policy" "scale_down" {
 resource "aws_cloudwatch_metric_alarm" "cpu_scale_up" {
   alarm_name = "${var.project_name}-${var.environment}-cpu-scale-up"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods = 2 # 2 periods = 10 minutes
+  # evaluation_periods = 2 <- before triggering alarm , we need to check twice , and each check takes 5 minuts (means on ttoal 10 minut before trigger alarme)
+  evaluation_periods = 2 #(How Many Checks Needed)
   metric_name = "CPUUtilisation"
   namespace = "AWS/EC2"
-  period = 300 # 5-minute periods
+  period = 300 # each 5 minute , cloudewatch check
   statistic = "Average"
   threshold = 70 # 70% CPU threshold
   alarm_description = "Scale up when CPU > 70% for 10 minutes"
@@ -207,4 +208,23 @@ resource "aws_cloudwatch_metric_alarm" "cpu_scale_up" {
 }
 
 
-
+#CloudWAtch Alarm - Scale Down when CPU is low
+resource "aws_cloudwatch_metric_alarm" "cpu_scale_down" {
+  alarm_name = "${var.project_name}-${var.environment}-cpu-scale-down"
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods = 4
+  metric_name = "CPUUtilization"
+  namespace = "AWS/EC2"
+  period = 300 
+  statistic = "Average"
+  threshold = 30 
+  alarm_description = "Scale down when CPU < 30% for 20 minutes"
+  alarm_actions = [aws_autoscaling_policy.scale_down.arn]
+  dimensions = {
+    AutoScalingGroupName = aws_autoscaling_group.app.name
+  }
+  tags = {
+    Name = "${var.project_name}-${var.environment}-cpu-scale-down-alarm"
+    Purpose = "auto-scaling-trigger"
+  }
+}
