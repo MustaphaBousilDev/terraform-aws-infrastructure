@@ -172,5 +172,13 @@ resource "aws_autoscaling_policy" "scale_up" {
   adjustment_type = "ChangeInCapacity" # Change by exact number
   cooldown = 300 # Wait 5 minutes before next scaling
   autoscaling_group_name = aws_autoscaling_group.app.name
-  
+}
+
+# Auto Scaling Plocy - Scale down (remove instances)
+resource "aws_autoscaling_policy" "scale_down" {
+  name= "${var.project_name}-${var.environment}-scale-down"
+  scaling_adjustment = -1 # Remove instance (negative)
+  adjustment_type = "ChangeInCapacity" # change by exact number
+  cooldown = 300 
+  autoscaling_group_name = aws_autoscaling_group.app.name 
 }
