@@ -1,8 +1,6 @@
 # =============================================================================
 # CLOUDWATCH ALARMS FOR EC2 INSTANCES MONITORING
 # =============================================================================
-
-# Data source to get instances in the Auto Scaling Group
 data "aws_instances" "auto_scaling_instances" {
   count = var.enable_ec2_monitoring ? 1 : 0
   
