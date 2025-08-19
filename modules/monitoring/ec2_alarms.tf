@@ -19,7 +19,7 @@ data "aws_instances" "auto_scaling_instances" {
 # CPU UTILIZATION ALARMS
 # =============================================================================
 
-# High CPU Utilization Alarm (Critical)
+# High CPU Utilization Alarm , its for critical scénario
 resource "aws_cloudwatch_metric_alarm" "ec2_high_cpu" {
   count = var.enable_ec2_monitoring ? 1 : 0
   
@@ -50,7 +50,7 @@ resource "aws_cloudwatch_metric_alarm" "ec2_high_cpu" {
   }
 }
 
-# Very High CPU Utilization Alarm (Critical - for immediate scaling)
+# Very High CPU Utilization Alarm Critical but for immediat scaling
 resource "aws_cloudwatch_metric_alarm" "ec2_critical_cpu" {
   count = var.enable_ec2_monitoring ? 1 : 0
   
@@ -81,7 +81,7 @@ resource "aws_cloudwatch_metric_alarm" "ec2_critical_cpu" {
   }
 }
 
-# Low CPU Utilization Alarm (for cost optimization)
+# Low CPU Utilization Alarm , its for cost optimization
 resource "aws_cloudwatch_metric_alarm" "ec2_low_cpu" {
   count = var.enable_ec2_monitoring ? 1 : 0
   
@@ -155,7 +155,7 @@ resource "aws_cloudwatch_metric_alarm" "ec2_system_status_check" {
   evaluation_periods  = 2
   metric_name         = "StatusCheckFailed_System"
   namespace           = "AWS/EC2"
-  period              = 60  # Check every minute
+  period              = 60  # each 60 second , should  check
   statistic           = "Maximum"
   threshold           = 0
   alarm_description   = "System status check failed - AWS infrastructure issue detected"
