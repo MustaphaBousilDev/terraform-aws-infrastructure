@@ -33,3 +33,18 @@ output "database_connection_string" {
   value       = "mysql://${var.db_username}:${var.db_password}@${aws_db_instance.main.endpoint}/${var.db_name}"
   sensitive   = true
 }
+
+output "db_read_replica_endpoint" {
+  description = "RDS read replica endpoint"
+  value       = aws_db_instance.read_replica.endpoint
+}
+
+output "db_read_replica_port" {
+  description = "RDS read replica port"
+  value       = aws_db_instance.read_replica.port
+}
+
+output "db_read_replica_id" {
+  description = "RDS read replica identifier"
+  value       = aws_db_instance.read_replica.id
+}

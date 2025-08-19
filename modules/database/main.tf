@@ -51,7 +51,7 @@ resource "aws_db_instance" "main" {
   vpc_security_group_ids = [aws_security_group.database.id]
   db_subnet_group_name   = aws_db_subnet_group.main.name
   
-  backup_retention_period = 7
+  backup_retention_period = 7 # Primary keeps 7 days of backups
   backup_window          = "03:00-04:00"
   maintenance_window     = "sun:04:00-sun:05:00"
   
@@ -60,5 +60,74 @@ resource "aws_db_instance" "main" {
 
   tags = {
     Name = "${var.project_name}-${var.environment}-db"
+  }
+}
+
+
+#RDS read replica for improved read performance
+# Read Replica inherits most settings from source DB automatically
+# Engine , version , storage encryption, ...
+resource "aws_db_instance" "read_replica" {
+  identifier = "${var.project_name}-${var.environment}-db-replica"
+  #Creates replica of your main database
+  replicate_source_db = aws_db_instance.main.identifier
+  instance_class = var.db_instance_class
+  #Placement (it is the same as main database)
+  vpc_security_group_ids = [aws_security_group.database.id]
+
+  #Read replica settings 
+  publicly_accessible = false 
+  /*
+  -->AWS automatically applies minor database updates (like MySQL 8.0.28 → 8.0.32)
+  -->Updates happen during maintenance windows (not immediately)
+  -->Only minor versions (bug fixes, security patches) - never major versions
+  */
+  auto_minor_version_upgrade = true 
+
+  #Backup Setting (read replicas don't need their own backup) because main database already has backup for 7days
+  #read replica is copy not a source of truth (that why dont neet backup)
+  # backup costing
+  # the main database backup is sufficient for recovery , there is no need for more replica backup
+
+  backup_retention_period = 0
+  /*
+  -->true = Don't create snapshot when deleting read replica
+  --> false = Create final snapshot before deletion
+  -> Why do true for read replica
+  ----->because: Read replica can be easily recreated from primary
+  ----->because: Faster deletion when needed
+  ----->Primary database has its own snapshots
+  ----->No need for duplicate snapshots
+  */
+  skip_final_snapshot = true 
+  /*
+  false = Can delete the read replica easily
+  true = Must disable protection before deletion
+  --> Why false:
+  ---->because: Read replicas are meant to be disposable
+  ---->because: Easy to delete and recreate for testing
+  ---->because: Primary database has deletion_protection
+  ---->Replica is not critical infrastructure
+  !!!! Your Primary DB should have: true
+  */
+  deletion_protection = false 
+
+  #Peformance optimization 
+  /*
+  ---->Enables AWS Performance Insights - advanced database monitoring
+  ---->Shows slow queries, CPU usage, wait events
+  ---->Visual dashboard in AWS Console
+  ---->Helps identify performance bottlenecks
+  */
+  performance_insights_enabled = true 
+  /*
+  -->Keep Performance Insights data for 7 days
+  -->Can be: 7 days (free) or 731 days (paid)
+  */
+  performance_insights_retention_period = 7 #days 
+  tags = {
+    Name = "${var.project_name}-${var.environment}-db-replica"
+    Type = "read-replica"
+    Purpose = "read-performance-optimization"
   }
 }
