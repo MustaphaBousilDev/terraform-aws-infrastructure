@@ -16,7 +16,7 @@ resource "aws_kms_alias" "main" {
 }
 # Secrets Manager for database password
 resource "aws_secretsmanager_secret" "db_password" {
-  name        = "${var.project_name}-${var.environment}-db-password-v7"  # Different name
+  name        = "${var.project_name}-${var.environment}-db-password-v9"  # Different name
   description = "Database password for ${var.project_name}"
   kms_key_id  = aws_kms_key.main.arn
 
