@@ -397,3 +397,21 @@ resource "aws_cloudwatch_metric_alarm" "rds_low_utilization" {
     Purpose     = "Identify underutilized RDS instances for cost optimization"
   }
 }
+
+# Read replica monitoring 
+resource "aws_cloudwatch_metric_alarm" "read_replica_lag" {
+  count = var.enable_rds_monitoring ? 1 : 0
+
+  alarm_name = "${var.project_name}-${var.environment}-replica-lag"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 2
+  metric_name         = "ReplicaLag"
+  namespace           = "AWS/RDS"
+  period              = 300
+  statistic           = "Average"
+  threshold           = 30  # 30 seconds lag
+  alarm_description   = "Read replica lag is high"
+  dimensions = {
+    DBInstanceIdentifier = "${var.project_name}-${var.environment}-db-replica"
+  }
+}
