@@ -44,6 +44,10 @@ module "compute" {
   private_subnet_ids = module.networking.private_subnet_ids
   public_subnet_ids  = module.networking.public_subnet_ids
   instance_type      = "t3.micro"
+
+    # Database endpoints for application use
+  primary_db_endpoint    = module.database.db_instance_endpoint
+  read_replica_endpoint  = module.database.db_read_replica_endpoint
 }
 
 

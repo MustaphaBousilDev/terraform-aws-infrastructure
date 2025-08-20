@@ -28,3 +28,13 @@ variable "instance_type" {
   type        = string
   default     = "t3.micro"
 }
+
+variable "primary_db_endpoint" {
+  description = "Primary database endpoint for writes"
+  type        = string
+}
+
+variable "read_replica_endpoint" {
+  description = "Read replica endpoint for reads"
+  type        = string
+}

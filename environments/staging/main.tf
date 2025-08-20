@@ -34,6 +34,8 @@ module "networking" {
   bucket = "${var.project_name}-${var.environment}-test"
 }*/
 
+
+
 # Compute module
 module "compute" {
   source = "../../modules/compute"
@@ -44,8 +46,12 @@ module "compute" {
   private_subnet_ids = module.networking.private_subnet_ids
   public_subnet_ids  = module.networking.public_subnet_ids
   instance_type      = "t3.small"
-}
 
+
+  # Database endpoints for application use
+  primary_db_endpoint    = module.database.db_instance_endpoint
+  read_replica_endpoint  = module.database.db_read_replica_endpoint
+}
 
 # Database module
 module "database" {
@@ -58,6 +64,7 @@ module "database" {
   app_security_group_id = module.compute.app_security_group_id
   db_password           = "MySecurePassword123!"
 }
+
 
 # Storage module
 module "storage" {

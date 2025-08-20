@@ -16,3 +16,4 @@ variable "environment" {
   type        = string
   default     = "staging" # ← Only change this default
 }
+

@@ -118,6 +118,11 @@ resource "aws_launch_template" "app" {
               yum install -y httpd
               systemctl start httpd
               systemctl enable httpd
+
+              # Set database environment variables
+              echo "PRIMARY_DB_HOST=${var.primary_db_endpoint}" >> /etc/environment
+              echo "READ_REPLICA_DB_HOST=${var.read_replica_endpoint}" >> /etc/environment
+
               echo "<h1>Hello from ${var.project_name}-${var.environment}</h1>" > /var/www/html/index.html
               EOF
   )
