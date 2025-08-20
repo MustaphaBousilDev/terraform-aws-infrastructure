@@ -112,19 +112,8 @@ resource "aws_db_instance" "read_replica" {
   */
   deletion_protection = false
 
-  #Peformance optimization 
-  /*
-  ---->Enables AWS Performance Insights - advanced database monitoring
-  ---->Shows slow queries, CPU usage, wait events
-  ---->Visual dashboard in AWS Console
-  ---->Helps identify performance bottlenecks
-  */
-  performance_insights_enabled = true
-  /*
-  -->Keep Performance Insights data for 7 days
-  -->Can be: 7 days (free) or 731 days (paid)
-  */
-  performance_insights_retention_period = 7 #days 
+
+ 
   tags = {
     Name    = "${var.project_name}-${var.environment}-db-replica"
     Type    = "read-replica"
