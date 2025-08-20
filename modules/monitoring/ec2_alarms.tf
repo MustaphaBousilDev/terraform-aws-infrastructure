@@ -116,6 +116,10 @@ resource "aws_cloudwatch_metric_alarm" "ec2_low_cpu" {
 # =============================================================================
 
 # Instance Status Check Failed
+# Metric name: StatusCheckFailed_Instance
+# 0 → Instance passed the status check (healthy)
+# 1 → Instance failed the status check (unhealthy)
+
 resource "aws_cloudwatch_metric_alarm" "ec2_instance_status_check" {
   count = var.enable_ec2_monitoring ? 1 : 0
 
