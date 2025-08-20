@@ -83,11 +83,11 @@ resource "aws_s3_bucket_lifecycle_configuration" "logs" {
     status = "Enabled"
 
     filter {
-      prefix = ""  # Apply to all objects
+      prefix = "" # Apply to all objects
     }
 
     expiration {
-      days = 90  # Delete logs older than 90 days
+      days = 90 # Delete logs older than 90 days
     }
 
     noncurrent_version_expiration {
@@ -105,13 +105,13 @@ resource "aws_cloudfront_origin_access_identity" "static_assets" {
 resource "aws_cloudfront_distribution" "static_assets" {
   origin {
     domain_name = aws_s3_bucket.static_assets.bucket_regional_domain_name
-    origin_id = "S3-${aws_s3_bucket.static_assets.id}"
+    origin_id   = "S3-${aws_s3_bucket.static_assets.id}"
     s3_origin_config {
       origin_access_identity = aws_cloudfront_origin_access_identity.static_assets.cloudfront_access_identity_path
     }
   }
-  enabled             = true #Activates the distribution
-  is_ipv6_enabled     = true #Allows IPv6 connections for better global compatibility
+  enabled             = true         #Activates the distribution
+  is_ipv6_enabled     = true         #Allows IPv6 connections for better global compatibility
   default_root_object = "index.html" #When someone visits the root URL, serve this file
   default_cache_behavior {
     allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
@@ -132,7 +132,7 @@ resource "aws_cloudfront_distribution" "static_assets" {
     max_ttl     = 86400
   }
   #Limits edge locations to reduce costs (100 = cheapest tier covering major regions)
-  price_class = "PriceClass_100"  # US, Canada, Europe
+  price_class = "PriceClass_100" # US, Canada, Europe
   restrictions {
     geo_restriction {
       restriction_type = "none"
@@ -157,8 +157,8 @@ resource "aws_s3_bucket_policy" "static_assets" {
     Version = "2012-10-17"
     Statement = [
       {
-        Sid       = "AllowCloudFrontAccess"
-        Effect    = "Allow"
+        Sid    = "AllowCloudFrontAccess"
+        Effect = "Allow"
         Principal = {
           AWS = aws_cloudfront_origin_access_identity.static_assets.iam_arn
         }

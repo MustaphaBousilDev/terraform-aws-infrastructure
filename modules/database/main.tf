@@ -38,23 +38,23 @@ resource "aws_db_instance" "main" {
   engine         = "mysql"
   engine_version = "8.0"
   instance_class = var.db_instance_class
-  
+
   allocated_storage     = 20
   max_allocated_storage = 100
   storage_type          = "gp2"
   storage_encrypted     = true
-  
+
   db_name  = var.db_name
   username = var.db_username
   password = var.db_password
-  
+
   vpc_security_group_ids = [aws_security_group.database.id]
   db_subnet_group_name   = aws_db_subnet_group.main.name
-  
+
   backup_retention_period = 7 # Primary keeps 7 days of backups
-  backup_window          = "03:00-04:00"
-  maintenance_window     = "sun:04:00-sun:05:00"
-  
+  backup_window           = "03:00-04:00"
+  maintenance_window      = "sun:04:00-sun:05:00"
+
   skip_final_snapshot = true
   deletion_protection = false
 
@@ -71,18 +71,18 @@ resource "aws_db_instance" "read_replica" {
   identifier = "${var.project_name}-${var.environment}-db-replica"
   #Creates replica of your main database
   replicate_source_db = aws_db_instance.main.identifier
-  instance_class = var.db_instance_class
+  instance_class      = var.db_instance_class
   #Placement (it is the same as main database)
   vpc_security_group_ids = [aws_security_group.database.id]
 
   #Read replica settings 
-  publicly_accessible = false 
+  publicly_accessible = false
   /*
   -->AWS automatically applies minor database updates (like MySQL 8.0.28 → 8.0.32)
   -->Updates happen during maintenance windows (not immediately)
   -->Only minor versions (bug fixes, security patches) - never major versions
   */
-  auto_minor_version_upgrade = true 
+  auto_minor_version_upgrade = true
 
   #Backup Setting (read replicas don't need their own backup) because main database already has backup for 7days
   #read replica is copy not a source of truth (that why dont neet backup)
@@ -99,7 +99,7 @@ resource "aws_db_instance" "read_replica" {
   ----->Primary database has its own snapshots
   ----->No need for duplicate snapshots
   */
-  skip_final_snapshot = true 
+  skip_final_snapshot = true
   /*
   false = Can delete the read replica easily
   true = Must disable protection before deletion
@@ -110,7 +110,7 @@ resource "aws_db_instance" "read_replica" {
   ---->Replica is not critical infrastructure
   !!!! Your Primary DB should have: true
   */
-  deletion_protection = false 
+  deletion_protection = false
 
   #Peformance optimization 
   /*
@@ -119,15 +119,15 @@ resource "aws_db_instance" "read_replica" {
   ---->Visual dashboard in AWS Console
   ---->Helps identify performance bottlenecks
   */
-  performance_insights_enabled = true 
+  performance_insights_enabled = true
   /*
   -->Keep Performance Insights data for 7 days
   -->Can be: 7 days (free) or 731 days (paid)
   */
   performance_insights_retention_period = 7 #days 
   tags = {
-    Name = "${var.project_name}-${var.environment}-db-replica"
-    Type = "read-replica"
+    Name    = "${var.project_name}-${var.environment}-db-replica"
+    Type    = "read-replica"
     Purpose = "read-performance-optimization"
   }
 }

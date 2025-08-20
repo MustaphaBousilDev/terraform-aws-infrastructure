@@ -55,6 +55,6 @@ output "db_read_replica_endpoint" {
 }
 
 output "db_read_replica_port" {
-  description = "RDS read replica port"  
+  description = "RDS read replica port"
   value       = aws_db_instance.read_replica.port
 }

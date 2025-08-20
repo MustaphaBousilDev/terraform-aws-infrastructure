@@ -179,7 +179,7 @@ variable "rds_connection_threshold" {
 variable "rds_free_space_threshold" {
   description = "Free storage space threshold in bytes (default: 2GB)"
   type        = number
-  default     = 2147483648  # 2GB in bytes
+  default     = 2147483648 # 2GB in bytes
 }
 
 # Load Balancer Monitoring Thresholds
@@ -220,7 +220,7 @@ variable "evaluation_periods" {
 variable "alarm_period" {
   description = "Period in seconds for alarm evaluation"
   type        = number
-  default     = 300  # 5 minutes
+  default     = 300 # 5 minutes
   validation {
     condition     = contains([60, 300, 900, 3600], var.alarm_period)
     error_message = "Alarm period must be 60, 300, 900, or 3600 seconds."

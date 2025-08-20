@@ -87,17 +87,17 @@ output "alb_alarm_names" {
 output "monitoring_summary" {
   description = "Summary of monitoring resources created"
   value = {
-    log_groups_created     = var.enable_log_groups ? length(local.log_groups) : 0
-    sns_topics_created     = var.enable_sns_notifications ? 4 : 0
-    ec2_alarms_created     = var.enable_ec2_monitoring ? 7 : 0
-    rds_alarms_created     = var.enable_rds_monitoring ? 12 : 0
-    alb_alarms_created     = var.enable_alb_monitoring ? 13 : 0
-    email_notifications    = var.notification_email != "" ? true : false
-    sms_notifications      = var.notification_phone != "" ? true : false
-    slack_integration      = var.slack_webhook_url != "" ? true : false
-    teams_integration      = var.teams_webhook_url != "" ? true : false
-    custom_webhook         = var.custom_webhook_url != "" ? true : false
-    message_formatting     = var.enable_message_formatting
-    detailed_monitoring    = var.enable_detailed_monitoring
+    log_groups_created  = var.enable_log_groups ? length(local.log_groups) : 0
+    sns_topics_created  = var.enable_sns_notifications ? 4 : 0
+    ec2_alarms_created  = var.enable_ec2_monitoring ? 7 : 0
+    rds_alarms_created  = var.enable_rds_monitoring ? 12 : 0
+    alb_alarms_created  = var.enable_alb_monitoring ? 13 : 0
+    email_notifications = var.notification_email != "" ? true : false
+    sms_notifications   = var.notification_phone != "" ? true : false
+    slack_integration   = var.slack_webhook_url != "" ? true : false
+    teams_integration   = var.teams_webhook_url != "" ? true : false
+    custom_webhook      = var.custom_webhook_url != "" ? true : false
+    message_formatting  = var.enable_message_formatting
+    detailed_monitoring = var.enable_detailed_monitoring
   }
 }

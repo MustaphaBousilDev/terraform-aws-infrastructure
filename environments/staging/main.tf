@@ -49,8 +49,8 @@ module "compute" {
 
 
   # Database endpoints for application use
-  primary_db_endpoint    = module.database.db_instance_endpoint
-  read_replica_endpoint  = module.database.db_read_replica_endpoint
+  primary_db_endpoint   = module.database.db_instance_endpoint
+  read_replica_endpoint = module.database.db_read_replica_endpoint
 }
 
 # Database module

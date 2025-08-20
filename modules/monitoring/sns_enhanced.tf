@@ -6,7 +6,7 @@
 variable "notification_emails" {
   description = "List of email addresses for different alert types"
   type = object({
-    devops_team     = list(string)
+    devops_team      = list(string)
     development_team = list(string)
     management_team  = list(string)
     on_call_engineer = string
@@ -24,11 +24,11 @@ variable "notification_emails" {
 variable "webhook_endpoints" {
   description = "List of webhook endpoints for custom integrations"
   type = list(object({
-    name = string
-    url  = string
+    name        = string
+    url         = string
     auth_header = string
   }))
-  default = []
+  default   = []
   sensitive = true
 }
 
@@ -50,9 +50,9 @@ variable "enable_phone_calls" {
 # Main Alerts Topic (Medium severity alerts)
 resource "aws_sns_topic" "alerts" {
   count = var.enable_sns_notifications ? 1 : 0
-  
+
   name = "${var.project_name}-${var.environment}-alerts"
-  
+
   tags = {
     Name        = "${var.project_name}-${var.environment}-alerts-topic"
     Environment = var.environment
@@ -64,9 +64,9 @@ resource "aws_sns_topic" "alerts" {
 # Critical Alerts Topic (High severity alerts)
 resource "aws_sns_topic" "critical_alerts" {
   count = var.enable_sns_notifications ? 1 : 0
-  
+
   name = "${var.project_name}-${var.environment}-critical-alerts"
-  
+
   tags = {
     Name        = "${var.project_name}-${var.environment}-critical-alerts-topic"
     Environment = var.environment
@@ -77,9 +77,9 @@ resource "aws_sns_topic" "critical_alerts" {
 # Info Alerts Topic (Low severity, informational)
 resource "aws_sns_topic" "info_alerts" {
   count = var.enable_sns_notifications ? 1 : 0
-  
+
   name = "${var.project_name}-${var.environment}-info-alerts"
-  
+
   tags = {
     Name        = "${var.project_name}-${var.environment}-info-alerts-topic"
     Environment = var.environment
@@ -92,9 +92,9 @@ resource "aws_sns_topic" "info_alerts" {
 # Policy for alerts topic
 resource "aws_sns_topic_policy" "alerts_policy" {
   count = var.enable_sns_notifications ? 1 : 0
-  
+
   arn = aws_sns_topic.alerts[0].arn
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -134,9 +134,9 @@ resource "aws_sns_topic_policy" "alerts_policy" {
 # Policy for critical alerts topic
 resource "aws_sns_topic_policy" "critical_alerts_policy" {
   count = var.enable_sns_notifications ? 1 : 0
-  
+
   arn = aws_sns_topic.critical_alerts[0].arn
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -170,11 +170,11 @@ data "aws_caller_identity" "current" {}
 # DevOps team email subscriptions for all alerts
 resource "aws_sns_topic_subscription" "devops_alerts" {
   count = var.enable_sns_notifications && length(var.notification_emails.devops_team) > 0 ? length(var.notification_emails.devops_team) : 0
-  
+
   topic_arn = aws_sns_topic.alerts[0].arn
   protocol  = "email"
   endpoint  = var.notification_emails.devops_team[count.index]
-  
+
   # Add filter policy to reduce noise for DevOps team
   filter_policy = jsonencode({
     severity = ["medium", "high", "critical"]
@@ -184,7 +184,7 @@ resource "aws_sns_topic_subscription" "devops_alerts" {
 # DevOps team critical alerts
 resource "aws_sns_topic_subscription" "devops_critical_alerts" {
   count = var.enable_sns_notifications && length(var.notification_emails.devops_team) > 0 ? length(var.notification_emails.devops_team) : 0
-  
+
   topic_arn = aws_sns_topic.critical_alerts[0].arn
   protocol  = "email"
   endpoint  = var.notification_emails.devops_team[count.index]
@@ -193,11 +193,11 @@ resource "aws_sns_topic_subscription" "devops_critical_alerts" {
 # Development team email subscriptions (application-related alerts only)
 resource "aws_sns_topic_subscription" "dev_team_alerts" {
   count = var.enable_sns_notifications && length(var.notification_emails.development_team) > 0 ? length(var.notification_emails.development_team) : 0
-  
+
   topic_arn = aws_sns_topic.alerts[0].arn
   protocol  = "email"
   endpoint  = var.notification_emails.development_team[count.index]
-  
+
   # Filter for application-related alerts only
   filter_policy = jsonencode({
     alert_type = ["application-errors", "database-performance", "load-balancer-errors"]
@@ -207,7 +207,7 @@ resource "aws_sns_topic_subscription" "dev_team_alerts" {
 # Management team email subscriptions (critical and cost-related alerts)
 resource "aws_sns_topic_subscription" "management_alerts" {
   count = var.enable_sns_notifications && length(var.notification_emails.management_team) > 0 ? length(var.notification_emails.management_team) : 0
-  
+
   topic_arn = aws_sns_topic.critical_alerts[0].arn
   protocol  = "email"
   endpoint  = var.notification_emails.management_team[count.index]
@@ -216,11 +216,11 @@ resource "aws_sns_topic_subscription" "management_alerts" {
 # Management team cost optimization alerts
 resource "aws_sns_topic_subscription" "management_cost_alerts" {
   count = var.enable_sns_notifications && length(var.notification_emails.management_team) > 0 ? length(var.notification_emails.management_team) : 0
-  
+
   topic_arn = aws_sns_topic.info_alerts[0].arn
   protocol  = "email"
   endpoint  = var.notification_emails.management_team[count.index]
-  
+
   # Filter for cost optimization alerts
   filter_policy = jsonencode({
     alert_type = ["cost-optimization"]
@@ -230,7 +230,7 @@ resource "aws_sns_topic_subscription" "management_cost_alerts" {
 # On-call engineer direct notification
 resource "aws_sns_topic_subscription" "on_call_critical" {
   count = var.enable_sns_notifications && var.notification_emails.on_call_engineer != "" ? 1 : 0
-  
+
   topic_arn = aws_sns_topic.critical_alerts[0].arn
   protocol  = "email"
   endpoint  = var.notification_emails.on_call_engineer
@@ -243,9 +243,9 @@ resource "aws_sns_topic_subscription" "on_call_critical" {
 # Phone call subscription for critical alerts
 resource "aws_sns_topic_subscription" "phone_critical_alerts" {
   count = var.enable_sns_notifications && var.enable_phone_calls && var.phone_number_critical != "" ? 1 : 0
-  
+
   topic_arn = aws_sns_topic.critical_alerts[0].arn
-  protocol  = "sms"  # Note: Voice calls require AWS Connect or third-party service
+  protocol  = "sms" # Note: Voice calls require AWS Connect or third-party service
   endpoint  = var.phone_number_critical
 }
 
@@ -256,9 +256,9 @@ resource "aws_sns_topic_subscription" "phone_critical_alerts" {
 # IAM role for Slack notification Lambda
 resource "aws_iam_role" "slack_notification_lambda_role" {
   count = var.enable_sns_notifications && var.slack_webhook_url != "" ? 1 : 0
-  
+
   name = "${var.project_name}-${var.environment}-slack-notification-lambda-role"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -271,7 +271,7 @@ resource "aws_iam_role" "slack_notification_lambda_role" {
       }
     ]
   })
-  
+
   tags = {
     Name        = "${var.project_name}-${var.environment}-slack-lambda-role"
     Environment = var.environment
@@ -283,7 +283,7 @@ resource "aws_iam_role" "slack_notification_lambda_role" {
 # IAM policy for Lambda basic execution
 resource "aws_iam_role_policy_attachment" "slack_lambda_basic_execution" {
   count = var.enable_sns_notifications && var.slack_webhook_url != "" ? 1 : 0
-  
+
   role       = aws_iam_role.slack_notification_lambda_role[0].name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
@@ -291,14 +291,14 @@ resource "aws_iam_role_policy_attachment" "slack_lambda_basic_execution" {
 # Lambda function for Slack notifications
 resource "aws_lambda_function" "slack_notification" {
   count = var.enable_sns_notifications && var.slack_webhook_url != "" ? 1 : 0
-  
-  filename         = "slack_notification.zip"
-  function_name    = "${var.project_name}-${var.environment}-slack-notification"
-  role            = aws_iam_role.slack_notification_lambda_role[0].arn
-  handler         = "index.handler"
-  runtime         = "python3.9"
-  timeout         = 30
-  
+
+  filename      = "slack_notification.zip"
+  function_name = "${var.project_name}-${var.environment}-slack-notification"
+  role          = aws_iam_role.slack_notification_lambda_role[0].arn
+  handler       = "index.handler"
+  runtime       = "python3.9"
+  timeout       = 30
+
   environment {
     variables = {
       SLACK_WEBHOOK_URL = var.slack_webhook_url
@@ -306,7 +306,7 @@ resource "aws_lambda_function" "slack_notification" {
       ENVIRONMENT       = var.environment
     }
   }
-  
+
   tags = {
     Name        = "${var.project_name}-${var.environment}-slack-notification"
     Environment = var.environment
@@ -318,10 +318,10 @@ resource "aws_lambda_function" "slack_notification" {
 # Create the Lambda deployment package
 data "archive_file" "slack_notification_zip" {
   count = var.enable_sns_notifications && var.slack_webhook_url != "" ? 1 : 0
-  
+
   type        = "zip"
   output_path = "slack_notification.zip"
-  
+
   source {
     content = templatefile("${path.module}/lambda/slack_notification.py", {
       webhook_url = var.slack_webhook_url
@@ -333,7 +333,7 @@ data "archive_file" "slack_notification_zip" {
 # Lambda permission for SNS to invoke the function
 resource "aws_lambda_permission" "allow_sns_slack" {
   count = var.enable_sns_notifications && var.slack_webhook_url != "" ? 1 : 0
-  
+
   statement_id  = "AllowExecutionFromSNS"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.slack_notification[0].function_name
@@ -344,7 +344,7 @@ resource "aws_lambda_permission" "allow_sns_slack" {
 # SNS subscription for Slack notifications
 resource "aws_sns_topic_subscription" "slack_critical_alerts" {
   count = var.enable_sns_notifications && var.slack_webhook_url != "" ? 1 : 0
-  
+
   topic_arn = aws_sns_topic.critical_alerts[0].arn
   protocol  = "lambda"
   endpoint  = aws_lambda_function.slack_notification[0].arn
@@ -357,14 +357,14 @@ resource "aws_sns_topic_subscription" "slack_critical_alerts" {
 # Lambda function for webhook notifications
 resource "aws_lambda_function" "webhook_notification" {
   count = var.enable_sns_notifications && length(var.webhook_endpoints) > 0 ? 1 : 0
-  
-  filename         = "webhook_notification.zip"
-  function_name    = "${var.project_name}-${var.environment}-webhook-notification"
-  role            = aws_iam_role.webhook_notification_lambda_role[0].arn
-  handler         = "index.handler"
-  runtime         = "python3.9"
-  timeout         = 30
-  
+
+  filename      = "webhook_notification.zip"
+  function_name = "${var.project_name}-${var.environment}-webhook-notification"
+  role          = aws_iam_role.webhook_notification_lambda_role[0].arn
+  handler       = "index.handler"
+  runtime       = "python3.9"
+  timeout       = 30
+
   environment {
     variables = {
       WEBHOOK_ENDPOINTS = jsonencode(var.webhook_endpoints)
@@ -372,7 +372,7 @@ resource "aws_lambda_function" "webhook_notification" {
       ENVIRONMENT       = var.environment
     }
   }
-  
+
   tags = {
     Name        = "${var.project_name}-${var.environment}-webhook-notification"
     Environment = var.environment
@@ -384,9 +384,9 @@ resource "aws_lambda_function" "webhook_notification" {
 # IAM role for webhook notification Lambda
 resource "aws_iam_role" "webhook_notification_lambda_role" {
   count = var.enable_sns_notifications && length(var.webhook_endpoints) > 0 ? 1 : 0
-  
+
   name = "${var.project_name}-${var.environment}-webhook-notification-lambda-role"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -404,7 +404,7 @@ resource "aws_iam_role" "webhook_notification_lambda_role" {
 # IAM policy attachment for webhook Lambda
 resource "aws_iam_role_policy_attachment" "webhook_lambda_basic_execution" {
   count = var.enable_sns_notifications && length(var.webhook_endpoints) > 0 ? 1 : 0
-  
+
   role       = aws_iam_role.webhook_notification_lambda_role[0].name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
@@ -412,10 +412,10 @@ resource "aws_iam_role_policy_attachment" "webhook_lambda_basic_execution" {
 # Create webhook Lambda deployment package
 data "archive_file" "webhook_notification_zip" {
   count = var.enable_sns_notifications && length(var.webhook_endpoints) > 0 ? 1 : 0
-  
+
   type        = "zip"
   output_path = "webhook_notification.zip"
-  
+
   source {
     content = templatefile("${path.module}/lambda/webhook_notification.py", {
       webhook_endpoints = jsonencode(var.webhook_endpoints)
@@ -427,7 +427,7 @@ data "archive_file" "webhook_notification_zip" {
 # Lambda permission for webhook notifications
 resource "aws_lambda_permission" "allow_sns_webhook" {
   count = var.enable_sns_notifications && length(var.webhook_endpoints) > 0 ? 1 : 0
-  
+
   statement_id  = "AllowExecutionFromSNS"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.webhook_notification[0].function_name
@@ -438,7 +438,7 @@ resource "aws_lambda_permission" "allow_sns_webhook" {
 # SNS subscription for webhook notifications
 resource "aws_sns_topic_subscription" "webhook_alerts" {
   count = var.enable_sns_notifications && length(var.webhook_endpoints) > 0 ? 1 : 0
-  
+
   topic_arn = aws_sns_topic.alerts[0].arn
   protocol  = "lambda"
   endpoint  = aws_lambda_function.webhook_notification[0].arn
@@ -451,10 +451,10 @@ resource "aws_sns_topic_subscription" "webhook_alerts" {
 # SQS Dead Letter Queue for failed notifications
 resource "aws_sqs_queue" "notification_dlq" {
   count = var.enable_sns_notifications ? 1 : 0
-  
+
   name                      = "${var.project_name}-${var.environment}-notification-dlq"
-  message_retention_seconds = 1209600  # 14 days
-  
+  message_retention_seconds = 1209600 # 14 days
+
   tags = {
     Name        = "${var.project_name}-${var.environment}-notification-dlq"
     Environment = var.environment
@@ -466,7 +466,7 @@ resource "aws_sqs_queue" "notification_dlq" {
 # CloudWatch alarm for messages in DLQ
 resource "aws_cloudwatch_metric_alarm" "notification_dlq_messages" {
   count = var.enable_sns_notifications ? 1 : 0
-  
+
   alarm_name          = "${var.project_name}-${var.environment}-notification-dlq-messages"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
@@ -478,11 +478,11 @@ resource "aws_cloudwatch_metric_alarm" "notification_dlq_messages" {
   alarm_description   = "Failed notifications detected in dead letter queue"
   alarm_actions       = [aws_sns_topic.critical_alerts[0].arn]
   treat_missing_data  = "notBreaching"
-  
+
   dimensions = {
     QueueName = aws_sqs_queue.notification_dlq[0].name
   }
-  
+
   tags = {
     Name        = "${var.project_name}-${var.environment}-dlq-alarm"
     Environment = var.environment

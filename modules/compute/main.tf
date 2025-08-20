@@ -2,28 +2,28 @@
 resource "aws_security_group" "alb" {
   name_prefix = "${var.project_name}-${var.environment}-alb-"
   vpc_id      = var.vpc_id
-  
+
   ingress {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   tags = {
     Name = "${var.project_name}-${var.environment}-alb-sg"
   }
@@ -33,21 +33,21 @@ resource "aws_security_group" "alb" {
 resource "aws_security_group" "app" {
   name_prefix = "${var.project_name}-${var.environment}-app-"
   vpc_id      = var.vpc_id
-  
+
   ingress {
     from_port       = 80
     to_port         = 80
     protocol        = "tcp"
     security_groups = [aws_security_group.alb.id]
   }
-  
+
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   tags = {
     Name = "${var.project_name}-${var.environment}-app-sg"
   }
@@ -172,42 +172,42 @@ resource "aws_autoscaling_group" "app" {
 
 # Autu Scaling Policy - Scale up (add more instances)
 resource "aws_autoscaling_policy" "scale_up" {
-  name = "${var.project_name}-${var.environment}-scale-up"
-  scaling_adjustment = 1 # Add 1 instance
-  adjustment_type = "ChangeInCapacity" # Change by exact number
-  cooldown = 300 # Wait 5 minutes before next scaling
+  name                   = "${var.project_name}-${var.environment}-scale-up"
+  scaling_adjustment     = 1                  # Add 1 instance
+  adjustment_type        = "ChangeInCapacity" # Change by exact number
+  cooldown               = 300                # Wait 5 minutes before next scaling
   autoscaling_group_name = aws_autoscaling_group.app.name
 }
 
 # Auto Scaling Plocy - Scale down (remove instances)
 resource "aws_autoscaling_policy" "scale_down" {
-  name= "${var.project_name}-${var.environment}-scale-down"
-  scaling_adjustment = -1 # Remove instance (negative)
-  adjustment_type = "ChangeInCapacity" # change by exact number
-  cooldown = 300 
-  autoscaling_group_name = aws_autoscaling_group.app.name 
+  name                   = "${var.project_name}-${var.environment}-scale-down"
+  scaling_adjustment     = -1                 # Remove instance (negative)
+  adjustment_type        = "ChangeInCapacity" # change by exact number
+  cooldown               = 300
+  autoscaling_group_name = aws_autoscaling_group.app.name
 }
 
 # Add CPU Scale-Up Alarm
 #--> Cloud WAtch Alarm - Scale UP when CPU is high
 resource "aws_cloudwatch_metric_alarm" "cpu_scale_up" {
-  alarm_name = "${var.project_name}-${var.environment}-cpu-scale-up"
+  alarm_name          = "${var.project_name}-${var.environment}-cpu-scale-up"
   comparison_operator = "GreaterThanThreshold"
   # evaluation_periods = 2 <- before triggering alarm , we need to check twice , and each check takes 5 minuts (means on ttoal 10 minut before trigger alarme)
   evaluation_periods = 2 #(How Many Checks Needed)
-  metric_name = "CPUUtilisation"
-  namespace = "AWS/EC2"
-  period = 300 # each 5 minute , cloudewatch check
-  statistic = "Average"
-  threshold = 70 # 70% CPU threshold
-  alarm_description = "Scale up when CPU > 70% for 10 minutes"
+  metric_name        = "CPUUtilisation"
+  namespace          = "AWS/EC2"
+  period             = 300 # each 5 minute , cloudewatch check
+  statistic          = "Average"
+  threshold          = 70 # 70% CPU threshold
+  alarm_description  = "Scale up when CPU > 70% for 10 minutes"
   # THIS IS THE KEY: Trigger the scale-up policy
   alarm_actions = [aws_autoscaling_policy.scale_up.arn]
   dimensions = {
     AutoScalingGroupName = aws_autoscaling_group.app.name
   }
   tags = {
-    Name = "${var.project_name}-${var.environment}-cpu-scale-up-alarm"
+    Name    = "${var.project_name}-${var.environment}-cpu-scale-up-alarm"
     Purpose = "auto-scaling-trigger"
   }
 }
@@ -215,21 +215,21 @@ resource "aws_cloudwatch_metric_alarm" "cpu_scale_up" {
 
 #CloudWAtch Alarm - Scale Down when CPU is low
 resource "aws_cloudwatch_metric_alarm" "cpu_scale_down" {
-  alarm_name = "${var.project_name}-${var.environment}-cpu-scale-down"
+  alarm_name          = "${var.project_name}-${var.environment}-cpu-scale-down"
   comparison_operator = "LessThanThreshold"
-  evaluation_periods = 4
-  metric_name = "CPUUtilization"
-  namespace = "AWS/EC2"
-  period = 300 
-  statistic = "Average"
-  threshold = 30 
-  alarm_description = "Scale down when CPU < 30% for 20 minutes"
-  alarm_actions = [aws_autoscaling_policy.scale_down.arn]
+  evaluation_periods  = 4
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = 300
+  statistic           = "Average"
+  threshold           = 30
+  alarm_description   = "Scale down when CPU < 30% for 20 minutes"
+  alarm_actions       = [aws_autoscaling_policy.scale_down.arn]
   dimensions = {
     AutoScalingGroupName = aws_autoscaling_group.app.name
   }
   tags = {
-    Name = "${var.project_name}-${var.environment}-cpu-scale-down-alarm"
+    Name    = "${var.project_name}-${var.environment}-cpu-scale-down-alarm"
     Purpose = "auto-scaling-trigger"
   }
 }

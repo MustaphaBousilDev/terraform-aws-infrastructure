@@ -40,9 +40,9 @@ module "compute" {
   public_subnet_ids  = module.networking.public_subnet_ids
   instance_type      = var.instance_type # t3.large
 
-    # Database endpoints for application use
-  primary_db_endpoint    = module.database.db_instance_endpoint
-  read_replica_endpoint  = module.database.db_read_replica_endpoint
+  # Database endpoints for application use
+  primary_db_endpoint   = module.database.db_instance_endpoint
+  read_replica_endpoint = module.database.db_read_replica_endpoint
 }
 
 # Production database (using supported variables only)

@@ -5,10 +5,10 @@
 # Application Server Logs
 resource "aws_cloudwatch_log_group" "application" {
   count = var.enable_log_groups ? 1 : 0
-  
+
   name              = "/aws/ec2/${var.project_name}-${var.environment}/application"
   retention_in_days = var.log_retention_days
-  
+
   tags = {
     Name        = "${var.project_name}-${var.environment}-app-logs"
     Environment = var.environment
@@ -21,10 +21,10 @@ resource "aws_cloudwatch_log_group" "application" {
 # Web Server Access Logs (Apache/Nginx)
 resource "aws_cloudwatch_log_group" "web_server" {
   count = var.enable_log_groups ? 1 : 0
-  
+
   name              = "/aws/ec2/${var.project_name}-${var.environment}/web-server"
   retention_in_days = var.log_retention_days
-  
+
   tags = {
     Name        = "${var.project_name}-${var.environment}-web-logs"
     Environment = var.environment
@@ -37,10 +37,10 @@ resource "aws_cloudwatch_log_group" "web_server" {
 # System Logs (OS level logs, security, etc.)
 resource "aws_cloudwatch_log_group" "system" {
   count = var.enable_log_groups ? 1 : 0
-  
+
   name              = "/aws/ec2/${var.project_name}-${var.environment}/system"
   retention_in_days = var.log_retention_days
-  
+
   tags = {
     Name        = "${var.project_name}-${var.environment}-system-logs"
     Environment = var.environment
@@ -53,10 +53,10 @@ resource "aws_cloudwatch_log_group" "system" {
 # Application Error Logs (Critical errors, exceptions)
 resource "aws_cloudwatch_log_group" "application_errors" {
   count = var.enable_log_groups ? 1 : 0
-  
+
   name              = "/aws/ec2/${var.project_name}-${var.environment}/errors"
-  retention_in_days = var.log_retention_days * 2  # Keep error logs longer
-  
+  retention_in_days = var.log_retention_days * 2 # Keep error logs longer
+
   tags = {
     Name        = "${var.project_name}-${var.environment}-error-logs"
     Environment = var.environment
@@ -69,10 +69,10 @@ resource "aws_cloudwatch_log_group" "application_errors" {
 # Database Slow Query Logs (RDS/MySQL slow queries)
 resource "aws_cloudwatch_log_group" "database_slow_query" {
   count = var.enable_log_groups && var.enable_rds_monitoring ? 1 : 0
-  
+
   name              = "/aws/rds/instance/${var.project_name}-${var.environment}/slowquery"
   retention_in_days = var.log_retention_days
-  
+
   tags = {
     Name        = "${var.project_name}-${var.environment}-db-slow-logs"
     Environment = var.environment
@@ -85,10 +85,10 @@ resource "aws_cloudwatch_log_group" "database_slow_query" {
 # Database Error Logs (RDS/MySQL errors)
 resource "aws_cloudwatch_log_group" "database_error" {
   count = var.enable_log_groups && var.enable_rds_monitoring ? 1 : 0
-  
+
   name              = "/aws/rds/instance/${var.project_name}-${var.environment}/error"
-  retention_in_days = var.log_retention_days * 2  # Keep database errors longer
-  
+  retention_in_days = var.log_retention_days * 2 # Keep database errors longer
+
   tags = {
     Name        = "${var.project_name}-${var.environment}-db-error-logs"
     Environment = var.environment
@@ -101,10 +101,10 @@ resource "aws_cloudwatch_log_group" "database_error" {
 # Load Balancer Access Logs (ALB requests)
 resource "aws_cloudwatch_log_group" "load_balancer" {
   count = var.enable_log_groups && var.enable_alb_monitoring ? 1 : 0
-  
+
   name              = "/aws/applicationloadbalancer/${var.project_name}-${var.environment}"
   retention_in_days = var.log_retention_days
-  
+
   tags = {
     Name        = "${var.project_name}-${var.environment}-alb-logs"
     Environment = var.environment
@@ -117,10 +117,10 @@ resource "aws_cloudwatch_log_group" "load_balancer" {
 # Security Logs (Authentication, authorization, suspicious activities)
 resource "aws_cloudwatch_log_group" "security" {
   count = var.enable_log_groups ? 1 : 0
-  
+
   name              = "/aws/security/${var.project_name}-${var.environment}"
-  retention_in_days = var.log_retention_days * 3  # Keep security logs longest
-  
+  retention_in_days = var.log_retention_days * 3 # Keep security logs longest
+
   tags = {
     Name        = "${var.project_name}-${var.environment}-security-logs"
     Environment = var.environment
@@ -133,10 +133,10 @@ resource "aws_cloudwatch_log_group" "security" {
 # Performance Monitoring Logs (Custom metrics, performance data)
 resource "aws_cloudwatch_log_group" "performance" {
   count = var.enable_log_groups ? 1 : 0
-  
+
   name              = "/aws/performance/${var.project_name}-${var.environment}"
   retention_in_days = var.log_retention_days
-  
+
   tags = {
     Name        = "${var.project_name}-${var.environment}-performance-logs"
     Environment = var.environment
@@ -149,10 +149,10 @@ resource "aws_cloudwatch_log_group" "performance" {
 # Auto Scaling Logs (Scale up/down events, instance launches)
 resource "aws_cloudwatch_log_group" "auto_scaling" {
   count = var.enable_log_groups && var.enable_ec2_monitoring ? 1 : 0
-  
+
   name              = "/aws/autoscaling/${var.project_name}-${var.environment}"
   retention_in_days = var.log_retention_days
-  
+
   tags = {
     Name        = "${var.project_name}-${var.environment}-autoscaling-logs"
     Environment = var.environment
@@ -169,10 +169,10 @@ resource "aws_cloudwatch_log_group" "auto_scaling" {
 # Lambda Function Logs (for future serverless additions)
 resource "aws_cloudwatch_log_group" "lambda_functions" {
   count = var.enable_log_groups ? 1 : 0
-  
+
   name              = "/aws/lambda/${var.project_name}-${var.environment}"
   retention_in_days = var.log_retention_days
-  
+
   tags = {
     Name        = "${var.project_name}-${var.environment}-lambda-logs"
     Environment = var.environment
@@ -207,7 +207,7 @@ resource "aws_cloudwatch_log_stream" "critical_errors" {
 # Export log group names for use in other modules or applications
 locals {
   log_groups = var.enable_log_groups ? {
-    application         = aws_cloudwatch_log_group.application[0].name
+    application        = aws_cloudwatch_log_group.application[0].name
     web_server         = aws_cloudwatch_log_group.web_server[0].name
     system             = aws_cloudwatch_log_group.system[0].name
     application_errors = aws_cloudwatch_log_group.application_errors[0].name
