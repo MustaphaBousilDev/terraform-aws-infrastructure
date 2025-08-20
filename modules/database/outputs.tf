@@ -49,12 +49,3 @@ output "db_read_replica_id" {
   value       = aws_db_instance.read_replica.id
 }
 
-output "db_read_replica_endpoint" {
-  description = "RDS read replica endpoint"
-  value       = aws_db_instance.read_replica.endpoint
-}
-
-output "db_read_replica_port" {
-  description = "RDS read replica port"
-  value       = aws_db_instance.read_replica.port
-}
