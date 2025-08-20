@@ -110,9 +110,9 @@ resource "aws_cloudfront_distribution" "static_assets" {
       origin_access_identity = aws_cloudfront_origin_access_identity.static_assets.cloudfront_access_identity_path
     }
   }
-  enabled             = true
-  is_ipv6_enabled     = true
-  default_root_object = "index.html"
+  enabled             = true #Activates the distribution
+  is_ipv6_enabled     = true #Allows IPv6 connections for better global compatibility
+  default_root_object = "index.html" #When someone visits the root URL, serve this file
   default_cache_behavior {
     allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods         = ["GET", "HEAD"]
@@ -131,6 +131,7 @@ resource "aws_cloudfront_distribution" "static_assets" {
     default_ttl = 3600
     max_ttl     = 86400
   }
+  #Limits edge locations to reduce costs (100 = cheapest tier covering major regions)
   price_class = "PriceClass_100"  # US, Canada, Europe
   restrictions {
     geo_restriction {
@@ -138,6 +139,7 @@ resource "aws_cloudfront_distribution" "static_assets" {
     }
   }
   viewer_certificate {
+    #Uses AWS-provided SSL certificate (free, but uses CloudFront domain)
     cloudfront_default_certificate = true
   }
 
@@ -146,6 +148,8 @@ resource "aws_cloudfront_distribution" "static_assets" {
   }
 }
 
+
+#Grant CloudFront permission to read files from S3 bucket
 resource "aws_s3_bucket_policy" "static_assets" {
   bucket = aws_s3_bucket.static_assets.id
 
