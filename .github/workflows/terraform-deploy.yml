@@ -1,4 +1,4 @@
-name: 🚀 Multi-Environment Terraform Deployment
+name: 🚀 Multi-Environment Terraform Deployment 
 on:
     push:
         branches: [ main, develop, prod ]
