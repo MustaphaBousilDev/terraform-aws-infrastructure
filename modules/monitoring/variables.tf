@@ -306,3 +306,16 @@ variable "enable_alb_monitoring" {
   type        = bool
   default     = true
 }
+
+
+variable "enable_cloudfront_monitoring" {
+  description = "Enable CloudFront monitoring"
+  type        = bool
+  default     = true
+}
+
+variable "cloudfront_distribution_id" {
+  description = "CloudFront distribution ID"
+  type        = string
+  default     = ""
+}
