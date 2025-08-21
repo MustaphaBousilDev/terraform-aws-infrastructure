@@ -4,7 +4,7 @@ output "app_storage_bucket_name" {
 }
 
 output "app_storage_bucket_arn" {
-  description = "ARN of the application storage bucket"
+  description = "ARN of the application storage bucket "
   value       = aws_s3_bucket.app_storage.arn
 }
 
