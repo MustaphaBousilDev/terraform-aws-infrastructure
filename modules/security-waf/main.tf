@@ -1,12 +1,18 @@
 # WAF Web ACL for Application Load Balancer 
 resource "aws_wafv2_web_acl" "main" {
     name = "${var.project_name}-${var.environment}-waf"
+    # Protects regional resources (ALB)
+    # Scope: "REGIONAL" means this WAF protects Application Load Balancers (not CloudFront)
     scope = "REGIONAL"
+    # Allow traffic unless blocked by rules
+    # Default action: Allow all traffic, then apply specific blocking rules
     default_action {
       allow {}
     }
 
     # Rule 1: Block common SQL injection attacks
+    # Blocks common web attacks including:
+    # --> SQL injection attempts, Cross-site scripting (XSS), Path traversal attacks, Command injection 
     rule {
         name = "AWSManagedRulesCommonRuleSet"
         priority = 1
@@ -30,6 +36,8 @@ resource "aws_wafv2_web_acl" "main" {
     }
 
     # Rule 2: Block known bad inputs
+    # Blocks requests with malicious payloads like:
+    # --->Malformed requests, Known exploit strings,   Suspicious user agents,  Invalid HTTP methods
     rule {
         name     = "AWSManagedRulesKnownBadInputsRuleSet"
         priority = 2
@@ -86,6 +94,12 @@ resource "aws_wafv2_web_acl" "main" {
 }
 
 # Associate WAF with Application Load Balancer
+# Connects the WAF rules to your Application Load Balancer
+/* --> Result: All traffic hitting your ALB gets inspected by WAF first/*#Internet Request → WAF Inspection → ALB → EC2 Instances
+                     ↓
+                 Block if malicious
+                 Allow if legitimate
+*/
 resource "aws_wafv2_web_acl_association" "main" {
   resource_arn = var.load_balancer_arn
   web_acl_arn  = aws_wafv2_web_acl.main.arn
