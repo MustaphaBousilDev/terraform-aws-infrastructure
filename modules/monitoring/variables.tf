@@ -319,3 +319,15 @@ variable "cloudfront_distribution_id" {
   type        = string
   default     = ""
 }
+
+variable "enable_redis_monitoring" {
+  description = "Enable Redis monitoring"
+  type        = bool
+  default     = true
+}
+
+variable "redis_cluster_id" {
+  description = "Redis cluster ID"
+  type        = string
+  default     = ""
+}
