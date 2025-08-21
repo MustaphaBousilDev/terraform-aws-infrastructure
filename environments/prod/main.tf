@@ -137,6 +137,6 @@ module "monitoring" {
   log_retention_days = var.log_retention_days # 90 days
 
 
-   enable_cloudfront_monitoring = true
-   cloudfront_distribution_id   = module.storage.cloudfront_distribution_id
+  enable_cloudfront_monitoring = true
+  cloudfront_distribution_id   = module.storage.cloudfront_distribution_id
 }
