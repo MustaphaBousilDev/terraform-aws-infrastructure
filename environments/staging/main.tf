@@ -198,7 +198,7 @@ module "monitoring" {
 
   #redis monitoring 
   enable_redis_monitoring = true
-  redis_cluster_id        = module.caching.redis_endpoint # May need to be redis_cluster_id from caching outputs
+  redis_cluster_id        = module.caching.redis_cluster_id
 
 }
 
