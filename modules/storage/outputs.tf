@@ -27,3 +27,8 @@ output "logs_bucket_arn" {
   description = "ARN of the logs bucket"
   value       = aws_s3_bucket.logs.arn
 }
+
+output "cloudfront_distribution_id" {
+  description = "CloudFront distribution ID"
+  value       = aws_cloudfront_distribution.static_assets.id
+}
