@@ -212,3 +212,11 @@ module "caching" {
   app_security_group_id = module.compute.app_security_group_id
   redis_node_type       = "cache.t3.small"
 }
+
+module "security_waf" {
+  source = "../../modules/security-waf"
+  
+  project_name       = var.project_name
+  environment        = var.environment
+  load_balancer_arn  = module.compute.alb_arn
+}
