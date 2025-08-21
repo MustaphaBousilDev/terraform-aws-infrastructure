@@ -140,3 +140,14 @@ module "monitoring" {
   enable_cloudfront_monitoring = true
   cloudfront_distribution_id   = module.storage.cloudfront_distribution_id
 }
+
+module "caching" {
+  source = "../../modules/caching"
+  
+  project_name           = var.project_name
+  environment            = var.environment
+  vpc_id                 = module.networking.vpc_id
+  private_subnet_ids     = module.networking.private_subnet_ids
+  app_security_group_id  = module.compute.app_security_group_id
+  redis_node_type        = "cache.t3.large"
+}
