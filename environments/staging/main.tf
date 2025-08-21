@@ -215,8 +215,8 @@ module "caching" {
 
 module "security_waf" {
   source = "../../modules/security-waf"
-  
-  project_name       = var.project_name
-  environment        = var.environment
-  load_balancer_arn  = module.compute.alb_arn
+
+  project_name      = var.project_name
+  environment       = var.environment
+  load_balancer_arn = module.compute.alb_arn
 }
