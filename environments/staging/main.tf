@@ -190,4 +190,9 @@ module "monitoring" {
 
   # Log retention
   log_retention_days = 30 # Keep logs for 30 days (increase for production)
+
+
+
+  enable_cloudfront_monitoring = true
+  cloudfront_distribution_id   = module.storage.cloudfront_distribution_id
 }
