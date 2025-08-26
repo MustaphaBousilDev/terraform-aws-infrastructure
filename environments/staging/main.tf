@@ -18,7 +18,7 @@ provider "aws" {
     }
   }
 }
-
+ 
 # Use networking module
 module "networking" {
   source = "../../modules/networking"
