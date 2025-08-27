@@ -153,9 +153,17 @@ resource "aws_autoscaling_group" "app" {
   target_group_arns   = [aws_lb_target_group.app.arn]
   health_check_type   = "ELB"
 
-  min_size         = 1
-  max_size         = 3
-  desired_capacity = 2
+  min_size         = var.asg_min_size
+  max_size         = var.asg_max_size
+  desired_capacity = var.asg_desired_capacity
+
+  # Enable instance refresh for zero-downtime deployments
+  instance_refresh {
+    strategy = "Rolling"
+    preferences {
+      min_healthy_percentage = 50
+    }
+  }
 
   launch_template {
     id      = aws_launch_template.app.id
@@ -166,6 +174,11 @@ resource "aws_autoscaling_group" "app" {
     key                 = "Name"
     value               = "${var.project_name}-${var.environment}-asg"
     propagate_at_launch = false
+  }
+  tag {
+    key                 = "Environment"
+    value               = var.environment
+    propagate_at_launch = true
   }
 }
 
