@@ -42,3 +42,13 @@ output "private_route_table_ids" {
   description = "IDs of private route tables"
   value       = aws_route_table.private[*].id
 }
+
+output "s3_endpoint_id" {
+  description = "ID of the S3 VPC endpoint"
+  value       = aws_vpc_endpoint.s3.id
+}
+
+output "dynamodb_endpoint_id" {
+  description = "ID of the DynamoDB VPC endpoint"
+  value       = aws_vpc_endpoint.dynamodb.id
+}

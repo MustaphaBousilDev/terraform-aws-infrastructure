@@ -193,3 +193,7 @@ resource "aws_vpc_endpoint" "dynamodb" {
     Name = "${var.project_name}-${var.environment}-dynamodb-endpoint"
   }
 }
+
+# Data source for current region
+data "aws_region" "current" {}
+
