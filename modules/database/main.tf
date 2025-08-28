@@ -184,3 +184,15 @@ resource "aws_db_proxy" "main" {
     Name = "${var.project_name}-${var.environment}-rds-proxy"
   }
 }
+
+# RDS Proxy Target Group for Primary Database
+resource "aws_db_proxy_default_target_group" "main" {
+  db_proxy_name = aws_db_proxy.main.name
+
+  connection_pool_config {
+    max_connections_percent      = 100
+    max_idle_connections_percent = 50
+    connection_borrow_timeout    = 120
+    session_pinning_filters     = ["EXCLUDE_VARIABLE_SETS"]
+  }
+}
