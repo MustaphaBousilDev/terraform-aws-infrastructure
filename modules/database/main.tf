@@ -212,3 +212,27 @@ resource "aws_db_proxy_target" "read_replica" {
   db_proxy_name         = aws_db_proxy.main.name
   target_group_name     = aws_db_proxy_default_target_group.main.name
 }
+
+# Security Group for RDS Proxy
+resource "aws_security_group" "rds_proxy" {
+  name_prefix = "${var.project_name}-${var.environment}-rds-proxy-"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
+    security_groups = [var.app_security_group_id]
+  }
+
+  egress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    security_groups = [aws_security_group.database.id]
+  }
+
+  tags = {
+    Name = "${var.project_name}-${var.environment}-rds-proxy-sg"
+  }
+}
