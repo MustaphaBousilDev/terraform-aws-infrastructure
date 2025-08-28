@@ -167,3 +167,20 @@ resource "aws_iam_role_policy" "rds_proxy_policy" {
     ]
   })
 }
+
+# RDS Proxy
+resource "aws_db_proxy" "main" {
+  name                   = "${var.project_name}-${var.environment}-rds-proxy"
+  engine_family         = "MYSQL"
+  auth {
+    auth_scheme = "SECRETS"
+    secret_arn  = aws_secretsmanager_secret.db_password.arn
+  }
+  role_arn               = aws_iam_role.rds_proxy_role.arn
+  vpc_subnet_ids         = var.private_subnet_ids
+  require_tls           = true
+  idle_client_timeout   = 1800  # 30 minutes
+  tags = {
+    Name = "${var.project_name}-${var.environment}-rds-proxy"
+  }
+}
