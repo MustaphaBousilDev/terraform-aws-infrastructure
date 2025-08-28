@@ -236,3 +236,13 @@ resource "aws_security_group" "rds_proxy" {
     Name = "${var.project_name}-${var.environment}-rds-proxy-sg"
   }
 }
+
+# Update existing database security group to allow RDS Proxy
+resource "aws_security_group_rule" "database_from_proxy" {
+  type                     = "ingress"
+  from_port               = 3306
+  to_port                 = 3306
+  protocol                = "tcp"
+  source_security_group_id = aws_security_group.rds_proxy.id
+  security_group_id       = aws_security_group.database.id
+}
