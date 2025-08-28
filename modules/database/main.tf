@@ -203,3 +203,12 @@ resource "aws_db_proxy_target" "main" {
   db_proxy_name         = aws_db_proxy.main.name
   target_group_name     = aws_db_proxy_default_target_group.main.name
 }
+
+# RDS Proxy Target For Read Replica
+resource "aws_db_proxy_target" "read_replica" {
+  count = var.enable_read_replica_proxy ? 1 : 0
+
+  db_instance_identifier = aws_db_instance.read_replica.id
+  db_proxy_name         = aws_db_proxy.main.name
+  target_group_name     = aws_db_proxy_default_target_group.main.name
+}
