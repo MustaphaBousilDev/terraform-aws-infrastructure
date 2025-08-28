@@ -44,9 +44,9 @@ resource "aws_db_instance" "main" {
   storage_type          = "gp2"
   storage_encrypted     = true
 
-  db_name  = var.db_name
-  username = var.db_username
-  password = var.db_password
+  db_name                       = var.db_name
+  manage_master_user_password   = true
+  master_user_secret_kms_key_id = var.kms_key_id
 
   vpc_security_group_ids = [aws_security_group.database.id]
   db_subnet_group_name   = aws_db_subnet_group.main.name
@@ -113,7 +113,7 @@ resource "aws_db_instance" "read_replica" {
   deletion_protection = false
 
 
- 
+
   tags = {
     Name    = "${var.project_name}-${var.environment}-db-replica"
     Type    = "read-replica"
@@ -170,16 +170,16 @@ resource "aws_iam_role_policy" "rds_proxy_policy" {
 
 # RDS Proxy
 resource "aws_db_proxy" "main" {
-  name                   = "${var.project_name}-${var.environment}-rds-proxy"
-  engine_family         = "MYSQL"
+  name          = "${var.project_name}-${var.environment}-rds-proxy"
+  engine_family = "MYSQL"
   auth {
     auth_scheme = "SECRETS"
     secret_arn  = aws_secretsmanager_secret.db_password.arn
   }
-  role_arn               = aws_iam_role.rds_proxy_role.arn
-  vpc_subnet_ids         = var.private_subnet_ids
-  require_tls           = true
-  idle_client_timeout   = 1800  # 30 minutes
+  role_arn            = aws_iam_role.rds_proxy_role.arn
+  vpc_subnet_ids      = var.private_subnet_ids
+  require_tls         = true # force encrypted connection between application and proxy
+  idle_client_timeout = 1800 # 30 minutes
   tags = {
     Name = "${var.project_name}-${var.environment}-rds-proxy"
   }
@@ -190,18 +190,18 @@ resource "aws_db_proxy_default_target_group" "main" {
   db_proxy_name = aws_db_proxy.main.name
 
   connection_pool_config {
-    max_connections_percent      = 100
-    max_idle_connections_percent = 50
-    connection_borrow_timeout    = 120
-    session_pinning_filters     = ["EXCLUDE_VARIABLE_SETS"]
+    max_connections_percent      = 100 #Use 100% of the proxy's available connection capacity (don't reserve any connections).
+    max_idle_connections_percent = 50  #Keep 50% of database connections open even when not actively used (reduces connection setup latency).
+    connection_borrow_timeout    = 120 #If all database connections are busy, wait up to 2 minutes for one to become available before failing.
+    session_pinning_filters      = ["EXCLUDE_VARIABLE_SETS"]
   }
 }
 
 # RDS Proxy Target (Primary Database)
 resource "aws_db_proxy_target" "main" {
   db_instance_identifier = aws_db_instance.main.id
-  db_proxy_name         = aws_db_proxy.main.name
-  target_group_name     = aws_db_proxy_default_target_group.main.name
+  db_proxy_name          = aws_db_proxy.main.name
+  target_group_name      = aws_db_proxy_default_target_group.main.name
 }
 
 # RDS Proxy Target For Read Replica
@@ -209,8 +209,8 @@ resource "aws_db_proxy_target" "read_replica" {
   count = var.enable_read_replica_proxy ? 1 : 0
 
   db_instance_identifier = aws_db_instance.read_replica.id
-  db_proxy_name         = aws_db_proxy.main.name
-  target_group_name     = aws_db_proxy_default_target_group.main.name
+  db_proxy_name          = aws_db_proxy.main.name
+  target_group_name      = aws_db_proxy_default_target_group.main.name
 }
 
 # Security Group for RDS Proxy
@@ -226,10 +226,10 @@ resource "aws_security_group" "rds_proxy" {
   }
 
   egress {
-    from_port   = 3306
-    to_port     = 3306
-    protocol    = "tcp"
-    security_groups = [aws_security_group.database.id] 
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
+    security_groups = [aws_security_group.database.id]
   }
 
   tags = {
@@ -240,9 +240,9 @@ resource "aws_security_group" "rds_proxy" {
 # Update existing database security group to allow RDS Proxy
 resource "aws_security_group_rule" "database_from_proxy" {
   type                     = "ingress"
-  from_port               = 3306
-  to_port                 = 3306
-  protocol                = "tcp"
+  from_port                = 3306
+  to_port                  = 3306
+  protocol                 = "tcp"
   source_security_group_id = aws_security_group.rds_proxy.id
-  security_group_id       = aws_security_group.database.id
+  security_group_id        = aws_security_group.database.id
 }

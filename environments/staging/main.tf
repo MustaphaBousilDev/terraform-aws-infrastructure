@@ -62,7 +62,8 @@ module "database" {
   vpc_id                = module.networking.vpc_id
   private_subnet_ids    = module.networking.private_subnet_ids
   app_security_group_id = module.compute.app_security_group_id
-  db_password           = "MySecurePassword123!"
+  kms_key_id            = module.security.kms_key_id
+  db_secret_arn         = module.security.db_secret_arn
 }
 
 

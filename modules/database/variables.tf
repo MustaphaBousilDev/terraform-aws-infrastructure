@@ -41,14 +41,18 @@ variable "db_username" {
   default     = "admin"
 }
 
-variable "db_password" {
-  description = "Database master password"
+variable "kms_key_id" {
+  description = "KMS key ID for encrypting database secrets"
   type        = string
-  sensitive   = true
 }
 
 variable "enable_read_replica_proxy" {
   description = "Enable read replica as proxy target"
   type        = bool
   default     = true
+}
+
+variable "db_secret_arn" {
+  description = "ARN of the database password secret"
+  type        = string
 }

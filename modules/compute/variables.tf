@@ -42,17 +42,17 @@ variable "read_replica_endpoint" {
 variable "asg_min_size" {
   description = "autoscaling group min instance"
   type        = number
-  default = 1
+  default     = 1
 }
 
 variable "asg_max_size" {
   description = "autoscaling group max instance"
   type        = number
-  default = 4
+  default     = 4
 }
 
 variable "asg_desired_capacity" {
   description = "autoscaling group desired instance"
   type        = number
-  default = 2
+  default     = 2
 }
