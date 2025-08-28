@@ -229,7 +229,7 @@ resource "aws_security_group" "rds_proxy" {
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
-    security_groups = [aws_security_group.database.id]
+    security_groups = [aws_security_group.database.id] 
   }
 
   tags = {

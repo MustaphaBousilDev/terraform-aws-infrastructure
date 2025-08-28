@@ -48,4 +48,17 @@ output "db_read_replica_id" {
   description = "RDS read replica identifier"
   value       = aws_db_instance.read_replica.id
 }
+output "rds_proxy_endpoint" {
+  description = "RDS Proxy endpoint for application connections"
+  value       = aws_db_proxy.main.endpoint
+}
 
+output "rds_proxy_port" {
+  description = "RDS Proxy port"
+  value       = aws_db_proxy.main.port
+}
+
+output "rds_proxy_arn" {
+  description = "ARN of the RDS Proxy"
+  value       = aws_db_proxy.main.arn
+}
