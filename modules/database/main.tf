@@ -146,3 +146,24 @@ resource "aws_iam_role" "rds_proxy_role" {
   }
 }
 
+# IAM Policy for RDS Proxy to access Secrets Manager
+resource "aws_iam_role_policy" "rds_proxy_policy" {
+  name = "${var.project_name}-${var.environment}-rds-proxy-policy"
+  role = aws_iam_role.rds_proxy_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ]
+        Resource = [
+          aws_secretsmanager_secret.db_password.arn
+        ]
+      }
+    ]
+  })
+}
