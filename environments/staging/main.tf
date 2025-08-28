@@ -48,9 +48,9 @@ module "compute" {
   instance_type      = "t3.small"
 
 
-  # Database endpoints for application use
-  primary_db_endpoint   = module.database.db_instance_endpoint
-  read_replica_endpoint = module.database.db_read_replica_endpoint
+  # Database endpoints of RDS proxy for application use
+  primary_db_endpoint   = module.database.rds_proxy_endpoint
+  read_replica_endpoint = module.database.rds_proxy_endpoint
 }
 
 # Database module
