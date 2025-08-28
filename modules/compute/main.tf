@@ -161,7 +161,8 @@ resource "aws_autoscaling_group" "app" {
   instance_refresh {
     strategy = "Rolling"
     preferences {
-      min_healthy_percentage = 50
+      # 50% of 4 instances = 2 instances minimum must stay healthy
+      min_healthy_percentage = 50 # 50% of instance always must be stay healty
     }
   }
 

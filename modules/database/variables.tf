@@ -46,3 +46,9 @@ variable "db_password" {
   type        = string
   sensitive   = true
 }
+
+variable "enable_read_replica_proxy" {
+  description = "Enable read replica as proxy target"
+  type        = bool
+  default     = true
+}

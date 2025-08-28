@@ -15,7 +15,7 @@ resource "aws_internet_gateway" "main" {
 
   tags = {
     Name = "${var.project_name}-${var.environment}-igw"
-    
+
   }
 }
 
@@ -52,7 +52,7 @@ resource "aws_subnet" "private" {
 
 # NAT Gateway
 resource "aws_eip" "nat" {
-  count = length(var.availability_zones)
+  count  = length(var.availability_zones)
   domain = "vpc"
 
   tags = {
@@ -63,7 +63,7 @@ resource "aws_eip" "nat" {
 }
 
 resource "aws_nat_gateway" "main" {
-  count = length(var.availability_zones)
+  count         = length(var.availability_zones)
   allocation_id = aws_eip.nat[count.index].id
   subnet_id     = aws_subnet.public[count.index].id
 
@@ -91,7 +91,7 @@ resource "aws_route_table" "public" {
 
 # Private Route Table
 resource "aws_route_table" "private" {
-  count = length(var.availability_zones)
+  count  = length(var.availability_zones)
   vpc_id = aws_vpc.main.id
 
   route {
@@ -157,7 +157,7 @@ resource "aws_iam_role_policy" "flow_log" {
           "logs:DescribeLogGroups",
           "logs:DescribeLogStreams"
         ]
-        Effect = "Allow"
+        Effect   = "Allow"
         Resource = "*"
       }
     ]
@@ -166,8 +166,8 @@ resource "aws_iam_role_policy" "flow_log" {
 
 #S3 Gateway Endpoint (its free)
 resource "aws_vpc_endpoint" "s3" {
-  vpc_id = aws_vpc.main.id 
-  service_name = "com.amazonaws.${data.aws_region.current.name}.s3"
+  vpc_id            = aws_vpc.main.id
+  service_name      = "com.amazonaws.${data.aws_region.current.name}.s3"
   vpc_endpoint_type = "Gateway"
   route_table_ids = concat(
     [aws_route_table.public.id],
@@ -182,7 +182,7 @@ resource "aws_vpc_endpoint" "s3" {
 resource "aws_vpc_endpoint" "dynamodb" {
   vpc_id       = aws_vpc.main.id
   service_name = "com.amazonaws.${data.aws_region.current.name}.dynamodb"
-  
+
   vpc_endpoint_type = "Gateway"
   route_table_ids = concat(
     [aws_route_table.public.id],
