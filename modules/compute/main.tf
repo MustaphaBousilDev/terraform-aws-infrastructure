@@ -266,3 +266,25 @@ resource "aws_acm_certificate" "main" {
     Name = "${var.project_name}-${var.environment}-ssl-cert"
   }
 }
+
+
+# HTTPS Listener for ALB
+# HTTPS Listener for ALB
+resource "aws_lb_listener" "https" {
+  count = var.enable_ssl ? 1 : 0
+
+  load_balancer_arn = aws_lb.main.arn
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
+  certificate_arn   = aws_acm_certificate.main[0].arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.app.arn
+  }
+
+  tags = {
+    Name = "${var.project_name}-${var.environment}-https-listener"
+  }
+}
