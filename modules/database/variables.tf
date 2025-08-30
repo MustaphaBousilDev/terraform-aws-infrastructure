@@ -41,6 +41,11 @@ variable "db_username" {
   default     = "admin"
 }
 
+variable "db_password" {
+  description = "Database master password"
+  type        = string
+}
+
 variable "kms_key_id" {
   description = "KMS key ID for encrypting database secrets"
   type        = string

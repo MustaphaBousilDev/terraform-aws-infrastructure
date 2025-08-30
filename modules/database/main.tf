@@ -45,8 +45,8 @@ resource "aws_db_instance" "main" {
   storage_encrypted     = true
 
   db_name                       = var.db_name
-  manage_master_user_password   = true
-  master_user_secret_kms_key_id = var.kms_key_id
+  username = var.db_username
+   password = var.db_password
 
   vpc_security_group_ids = [aws_security_group.database.id]
   db_subnet_group_name   = aws_db_subnet_group.main.name
@@ -160,9 +160,7 @@ resource "aws_iam_role_policy" "rds_proxy_policy" {
           "secretsmanager:GetSecretValue",
           "secretsmanager:DescribeSecret"
         ]
-        Resource = [
-          aws_secretsmanager_secret.db_password.arn
-        ]
+        Resource = [aws_db_instance.main.master_user_secret[0].secret_arn]
       }
     ]
   })
@@ -174,7 +172,7 @@ resource "aws_db_proxy" "main" {
   engine_family = "MYSQL"
   auth {
     auth_scheme = "SECRETS"
-    secret_arn  = aws_secretsmanager_secret.db_password.arn
+    secret_arn  = aws_db_instance.main.master_user_secret[0].secret_arn
   }
   role_arn            = aws_iam_role.rds_proxy_role.arn
   vpc_subnet_ids      = var.private_subnet_ids
@@ -199,7 +197,7 @@ resource "aws_db_proxy_default_target_group" "main" {
 
 # RDS Proxy Target (Primary Database)
 resource "aws_db_proxy_target" "main" {
-  db_instance_identifier = aws_db_instance.main.id
+  db_instance_identifier = aws_db_instance.main.identifier
   db_proxy_name          = aws_db_proxy.main.name
   target_group_name      = aws_db_proxy_default_target_group.main.name
 }
@@ -208,7 +206,7 @@ resource "aws_db_proxy_target" "main" {
 resource "aws_db_proxy_target" "read_replica" {
   count = var.enable_read_replica_proxy ? 1 : 0
 
-  db_instance_identifier = aws_db_instance.read_replica.id
+  db_instance_identifier = aws_db_instance.read_replica.identifier
   db_proxy_name          = aws_db_proxy.main.name
   target_group_name      = aws_db_proxy_default_target_group.main.name
 }

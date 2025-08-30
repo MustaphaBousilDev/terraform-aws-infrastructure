@@ -29,7 +29,7 @@ module "networking" {
   availability_zones = ["us-east-1a", "us-east-1b"]
 
   enable_interface_endpoints = true
-  enable_rds_endpoint       = true
+  enable_rds_endpoint        = true
 }
 
 # Test S3 bucket
@@ -67,6 +67,7 @@ module "database" {
   app_security_group_id = module.compute.app_security_group_id
   kms_key_id            = module.security.kms_key_id
   db_secret_arn         = module.security.db_secret_arn
+  db_password = "MySecurePassword123!"
 }
 
 

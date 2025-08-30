@@ -27,18 +27,19 @@ output "db_subnet_group_name" {
   description = "Database subnet group name"
   value       = aws_db_subnet_group.main.name
 }
-output "rds_proxy_connection_string" {
-  description = "RDS Proxy connection string"
-  value       = "mysql://${var.db_username}@${aws_db_proxy.main.endpoint}:${aws_db_proxy.main.port}/${var.db_name}"
-  sensitive   = true
-}
+
 output "rds_proxy_endpoint" {
   description = "RDS Proxy endpoint for application connections"
   value       = aws_db_proxy.main.endpoint
 }
 output "rds_proxy_port" {
-  description = "RDS Proxy port"
-  value       = aws_db_proxy.main.port
+  description = "RDS Proxy port (same as database)"
+  value       = 3306
+}
+output "rds_proxy_connection_string" {
+  description = "RDS Proxy connection string"
+  value       = "mysql://${var.db_username}@${aws_db_proxy.main.endpoint}:3306/${var.db_name}"
+  sensitive   = true
 }
 
 output "db_read_replica_endpoint" {
@@ -55,17 +56,11 @@ output "db_read_replica_id" {
   description = "RDS read replica identifier"
   value       = aws_db_instance.read_replica.id
 }
-output "rds_proxy_endpoint" {
-  description = "RDS Proxy endpoint for application connections"
-  value       = aws_db_proxy.main.endpoint
-}
 
-output "rds_proxy_port" {
-  description = "RDS Proxy port"
-  value       = aws_db_proxy.main.port
-}
+
 
 output "rds_proxy_arn" {
   description = "ARN of the RDS Proxy"
   value       = aws_db_proxy.main.arn
 }
+

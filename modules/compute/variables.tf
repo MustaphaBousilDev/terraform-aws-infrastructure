@@ -56,3 +56,4 @@ variable "asg_desired_capacity" {
   type        = number
   default     = 2
 }
+

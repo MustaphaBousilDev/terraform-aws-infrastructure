@@ -77,10 +77,10 @@ output "vpc_endpoints_summary" {
     }
     interface_endpoints = var.enable_interface_endpoints ? {
       cloudwatch_enabled     = true
-      ec2_enabled           = true
+      ec2_enabled            = true
       secretsmanager_enabled = true
-      logs_enabled          = true
-      rds_enabled           = var.enable_rds_endpoint
+      logs_enabled           = true
+      rds_enabled            = var.enable_rds_endpoint
     } : {}
   }
 }
