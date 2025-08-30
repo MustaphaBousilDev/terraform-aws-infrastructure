@@ -78,14 +78,22 @@ resource "aws_lb_target_group" "app" {
   health_check {
     enabled             = true
     healthy_threshold   = 2
-    interval            = 30
-    matcher             = "200"
-    path                = "/"
+    interval            = 15 # check every 15 second
+    matcher             = "200,301,302"  # Accept redirects as healthy
+    path                = var.health_check_path
     port                = "traffic-port"
     protocol            = "HTTP"
-    timeout             = 5
-    unhealthy_threshold = 2
+    timeout             = 10  # Longer timeout for better reliability
+    unhealthy_threshold = 3   # 3 failures before marking unhealthy
   }
+
+  # Enable sticky sessions if needed
+  stickiness {
+    enabled = false
+    type    = "lb_cookie"
+  }
+
+  
 
   tags = {
     Name = "${var.project_name}-${var.environment}-tg"
@@ -94,6 +102,9 @@ resource "aws_lb_target_group" "app" {
 
 # Load Balancer Listener
 resource "aws_lb_listener" "app" {
+  # Keep this lb_listenner working only if ssl enable is false
+  count = var.enable_ssl ? 0 : 1
+
   load_balancer_arn = aws_lb.main.arn
   port              = "80"
   protocol          = "HTTP"
