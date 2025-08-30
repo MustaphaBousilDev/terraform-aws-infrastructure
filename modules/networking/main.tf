@@ -223,3 +223,35 @@ resource "aws_security_group" "vpc_endpoints" {
     Name = "${var.project_name}-${var.environment}-vpc-endpoints-sg"
   }
 }
+
+# CloudWatch Interface Endpoint (Highest Priority)
+resource "aws_vpc_endpoint" "cloudwatch" {
+  count = var.enable_interface_endpoints ? 1 : 0
+
+  vpc_id              = aws_vpc.main.id
+  service_name        = "com.amazonaws.${data.aws_region.current.name}.monitoring"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = aws_subnet.private[*].id
+  security_group_ids  = [aws_security_group.vpc_endpoints[0].id]
+  
+  private_dns_enabled = true
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = "*"
+        Action = [
+          "cloudwatch:PutMetricData",
+          "cloudwatch:GetMetricStatistics",
+          "cloudwatch:ListMetrics"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+
+  tags = {
+    Name = "${var.project_name}-${var.environment}-cloudwatch-endpoint"
+  }
+}
