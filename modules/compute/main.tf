@@ -93,27 +93,14 @@ resource "aws_lb_target_group" "app" {
     type    = "lb_cookie"
   }
 
-  
+
 
   tags = {
     Name = "${var.project_name}-${var.environment}-tg"
   }
 }
 
-# Load Balancer Listener
-resource "aws_lb_listener" "app" {
-  # Keep this lb_listenner working only if ssl enable is false
-  count = var.enable_ssl ? 0 : 1
 
-  load_balancer_arn = aws_lb.main.arn
-  port              = "80"
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.app.arn
-  }
-}
 
 # Launch Template
 resource "aws_launch_template" "app" {
@@ -321,3 +308,5 @@ resource "aws_lb_listener" "http_redirect" {
     Name = "${var.project_name}-${var.environment}-http-redirect"
   }
 }
+
+# Security group rule for HTTPS traffic

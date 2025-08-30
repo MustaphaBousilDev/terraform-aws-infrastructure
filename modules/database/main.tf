@@ -160,7 +160,7 @@ resource "aws_iam_role_policy" "rds_proxy_policy" {
           "secretsmanager:GetSecretValue",
           "secretsmanager:DescribeSecret"
         ]
-        Resource = [aws_db_instance.main.master_user_secret[0].secret_arn]
+        Resource = [var.db_secret_arn]
       }
     ]
   })
@@ -172,7 +172,7 @@ resource "aws_db_proxy" "main" {
   engine_family = "MYSQL"
   auth {
     auth_scheme = "SECRETS"
-    secret_arn  = aws_db_instance.main.master_user_secret[0].secret_arn
+    secret_arn  = var.db_secret_arn
   }
   role_arn            = aws_iam_role.rds_proxy_role.arn
   vpc_subnet_ids      = var.private_subnet_ids

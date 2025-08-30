@@ -54,6 +54,11 @@ module "compute" {
   # Database endpoints of RDS proxy for application use
   primary_db_endpoint   = module.database.rds_proxy_endpoint
   read_replica_endpoint = module.database.rds_proxy_endpoint
+
+
+  enable_ssl    = true
+  domain_name       = "staging.mustaphabousildev.me"  # Replace with your actual domain
+  health_check_path = "/"
 }
 
 # Database module
@@ -68,6 +73,7 @@ module "database" {
   kms_key_id            = module.security.kms_key_id
   db_secret_arn         = module.security.db_secret_arn
   db_password = "MySecurePassword123!"
+  enable_read_replica_proxy = false 
 }
 
 
