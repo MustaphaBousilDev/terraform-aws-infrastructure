@@ -27,6 +27,9 @@ module "networking" {
   environment        = var.environment
   vpc_cidr           = "10.0.0.0/16"
   availability_zones = ["us-east-1a", "us-east-1b"]
+
+  enable_interface_endpoints = true
+  enable_rds_endpoint       = true
 }
 
 # Test S3 bucket

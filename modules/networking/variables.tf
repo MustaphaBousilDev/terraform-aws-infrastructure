@@ -25,3 +25,15 @@ variable "enable_flow_logs" {
   type        = bool
   default     = true
 }
+
+variable "enable_interface_endpoints" {
+  description = "Enable Interface VPC Endpoints for AWS services"
+  type        = bool
+  default     = false
+}
+
+variable "enable_rds_endpoint" {
+  description = "Enable RDS Interface VPC Endpoint"
+  type        = bool
+  default     = false
+}

@@ -197,3 +197,29 @@ resource "aws_vpc_endpoint" "dynamodb" {
 # Data source for current region
 data "aws_region" "current" {}
 
+
+# Security Group for Interface VPC Endpoints
+resource "aws_security_group" "vpc_endpoints" {
+  count = var.enable_interface_endpoints ? 1 : 0
+
+  name_prefix = "${var.project_name}-${var.environment}-vpc-endpoints-"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [aws_vpc.main.cidr_block]
+  }
+
+  egress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.project_name}-${var.environment}-vpc-endpoints-sg"
+  }
+}
