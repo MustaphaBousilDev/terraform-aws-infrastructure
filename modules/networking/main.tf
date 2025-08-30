@@ -255,3 +255,36 @@ resource "aws_vpc_endpoint" "cloudwatch" {
     Name = "${var.project_name}-${var.environment}-cloudwatch-endpoint"
   }
 }
+
+
+# EC2 Interface Endpoint (Auto Scaling API calls)
+resource "aws_vpc_endpoint" "ec2" {
+  count = var.enable_interface_endpoints ? 1 : 0
+
+  vpc_id              = aws_vpc.main.id
+  service_name        = "com.amazonaws.${data.aws_region.current.name}.ec2"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = aws_subnet.private[*].id
+  security_group_ids  = [aws_security_group.vpc_endpoints[0].id]
+  
+  private_dns_enabled = true
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = "*"
+        Action = [
+          "ec2:DescribeInstances",
+          "ec2:DescribeInstanceStatus",
+          "ec2:DescribeTags"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+
+  tags = {
+    Name = "${var.project_name}-${var.environment}-ec2-endpoint"
+  }
+}
