@@ -57,3 +57,20 @@ variable "asg_desired_capacity" {
   default     = 2
 }
 
+variable "enable_ssl" {
+  description = "Enable SSL/HTTPS on load balancer"
+  type        = bool
+  default     = false
+}
+
+variable "domain_name" {
+  description = "Domain name for SSL certificate"
+  type        = string
+  default     = ""
+}
+
+variable "health_check_path" {
+  description = "Health check path for target group"
+  type        = string
+  default     = "/"
+}

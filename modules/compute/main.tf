@@ -247,3 +247,22 @@ resource "aws_cloudwatch_metric_alarm" "cpu_scale_down" {
     Purpose = "auto-scaling-trigger"
   }
 }
+# SSL Certificate from AWS Certificate Manager
+resource "aws_acm_certificate" "main" {
+  count = var.enable_ssl ? 1 : 0
+
+  domain_name       = var.domain_name
+  validation_method = "DNS"
+
+  subject_alternative_names = [
+    "*.${var.domain_name}"  # Wildcard for subdomains
+  ]
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = {
+    Name = "${var.project_name}-${var.environment}-ssl-cert"
+  }
+}
