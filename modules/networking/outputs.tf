@@ -52,3 +52,35 @@ output "dynamodb_endpoint_id" {
   description = "ID of the DynamoDB VPC endpoint"
   value       = aws_vpc_endpoint.dynamodb.id
 }
+
+output "cloudwatch_endpoint_id" {
+  description = "ID of the CloudWatch VPC endpoint"
+  value       = var.enable_interface_endpoints ? aws_vpc_endpoint.cloudwatch[0].id : null
+}
+
+output "ec2_endpoint_id" {
+  description = "ID of the EC2 VPC endpoint"
+  value       = var.enable_interface_endpoints ? aws_vpc_endpoint.ec2[0].id : null
+}
+
+output "secretsmanager_endpoint_id" {
+  description = "ID of the Secrets Manager VPC endpoint"
+  value       = var.enable_interface_endpoints ? aws_vpc_endpoint.secretsmanager[0].id : null
+}
+
+output "vpc_endpoints_summary" {
+  description = "Summary of created VPC endpoints"
+  value = {
+    gateway_endpoints = {
+      s3_enabled       = true
+      dynamodb_enabled = true
+    }
+    interface_endpoints = var.enable_interface_endpoints ? {
+      cloudwatch_enabled     = true
+      ec2_enabled           = true
+      secretsmanager_enabled = true
+      logs_enabled          = true
+      rds_enabled           = var.enable_rds_endpoint
+    } : {}
+  }
+}
