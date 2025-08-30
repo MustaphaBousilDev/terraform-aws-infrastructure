@@ -351,3 +351,34 @@ resource "aws_vpc_endpoint" "logs" {
     Name = "${var.project_name}-${var.environment}-logs-endpoint"
   }
 }
+
+# RDS Interface Endpoint (Database Management API)
+resource "aws_vpc_endpoint" "rds" {
+  count = var.enable_interface_endpoints && var.enable_rds_endpoint ? 1 : 0
+
+  vpc_id              = aws_vpc.main.id
+  service_name        = "com.amazonaws.${data.aws_region.current.name}.rds"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = aws_subnet.private[*].id
+  security_group_ids  = [aws_security_group.vpc_endpoints[0].id]
+  
+  private_dns_enabled = true
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = "*"
+        Action = [
+          "rds:DescribeDBInstances",
+          "rds:DescribeDBClusters"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+
+  tags = {
+    Name = "${var.project_name}-${var.environment}-rds-endpoint"
+  }
+}
